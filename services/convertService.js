@@ -10,19 +10,36 @@ class ConvertService {
    * Convert Image(s) (JPG / PNG) to PDF
    */
   static async imagesToPDF(imageFilePaths) {
+    // Check if uploaded files are actually PDF files
+    const pdfFiles = imageFilePaths.filter(fp => path.extname(fp).toLowerCase() === '.pdf');
+    if (pdfFiles.length === imageFilePaths.length) {
+      // If user uploaded PDF files into Image to PDF tool, seamlessly call mergePDFs
+      return await PDFService.mergePDFs(imageFilePaths);
+    }
+
     const pdfDoc = await PDFDocument.create();
 
     for (const imgPath of imageFilePaths) {
-      const imgBytes = fs.readFileSync(imgPath);
       const ext = path.extname(imgPath).toLowerCase();
-      
+      if (ext === '.pdf') {
+        const fileBytes = fs.readFileSync(imgPath);
+        const pdf = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+        const copiedPages = await pdfDoc.copyPages(pdf, pdf.getPageIndices());
+        copiedPages.forEach((page) => pdfDoc.addPage(page));
+        continue;
+      }
+
+      const imgBytes = fs.readFileSync(imgPath);
       let embeddedImage;
-      if (ext === '.png') {
-        embeddedImage = await pdfDoc.embedPng(imgBytes);
-      } else {
-        // Default to JPG / PNG fallback via sharp
-        const jpegBuffer = await sharp(imgBytes).jpeg({ quality: 90 }).toBuffer();
-        embeddedImage = await pdfDoc.embedJpg(jpegBuffer);
+      try {
+        if (ext === '.png') {
+          embeddedImage = await pdfDoc.embedPng(imgBytes);
+        } else {
+          const jpegBuffer = await sharp(imgBytes).jpeg({ quality: 90 }).toBuffer();
+          embeddedImage = await pdfDoc.embedJpg(jpegBuffer);
+        }
+      } catch (err) {
+        throw new Error(`Failed to process image file "${path.basename(imgPath)}": Please upload valid JPG, PNG, or WebP image files.`);
       }
 
       const page = pdfDoc.addPage([embeddedImage.width, embeddedImage.height]);

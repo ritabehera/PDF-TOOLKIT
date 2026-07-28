@@ -386,15 +386,24 @@ function switchTool(toolKey) {
 // Convert Endpoint Dynamic Updater
 function updateConvertEndpoint(mode) {
   const fileInput = document.getElementById('fileInput');
+  if (!fileInput) return;
+  
+  // Clear file selection on mode change to prevent cross-format error
+  appState.selectedFiles = [];
+  updateFileListUI();
+
   if (mode === 'img2pdf') {
     toolRegistry.convert.endpoint = '/api/convert/images-to-pdf';
     fileInput.multiple = true;
+    fileInput.accept = '.png,.jpg,.jpeg,.webp,.pdf';
   } else if (mode === 'pdf2txt') {
     toolRegistry.convert.endpoint = '/api/convert/pdf-to-text';
     fileInput.multiple = false;
+    fileInput.accept = '.pdf';
   } else if (mode === 'pdf2html') {
     toolRegistry.convert.endpoint = '/api/convert/pdf-to-html';
     fileInput.multiple = false;
+    fileInput.accept = '.pdf';
   }
 }
 
