@@ -221,6 +221,29 @@ class PDFController {
       next(err);
     }
   }
+
+  static async addQRCode(req, res, next) {
+    try {
+      if (!req.file) return res.status(400).json({ error: 'Please upload a PDF file.' });
+
+      const qrText = req.body.qrText || 'https://pdftoolkit.ai';
+      const result = await PDFService.addQRCodeToPDF(req.file.path, qrText);
+
+      cleanupFile(req.file.path);
+
+      await HistoryModel.add({
+        userId: req.user ? req.user.id : 'guest',
+        toolName: 'Add QR Code to PDF',
+        fileName: result.filename,
+        fileSize: result.size,
+        downloadUrl: result.url
+      });
+
+      res.json({ success: true, message: 'QR Code stamped on PDF successfully.', result });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = PDFController;

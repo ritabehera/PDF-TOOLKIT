@@ -13,5 +13,6 @@ router.post('/header-footer', pdfOpLimiter, upload.single('file'), PDFController
 router.post('/organize', pdfOpLimiter, upload.single('file'), PDFController.organize);
 router.post('/encrypt', pdfOpLimiter, upload.single('file'), PDFController.encrypt);
 router.post('/decrypt', pdfOpLimiter, upload.single('file'), PDFController.decrypt);
+router.post('/qrcode', pdfOpLimiter, upload.single('file'), PDFController.addQRCode);
 
 module.exports = router;

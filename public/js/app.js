@@ -213,6 +213,102 @@ const toolRegistry = {
           <option value="pdf2html">PDF to HTML Web Page</option>
         </select>
       </div>`
+  },
+  'lock-pdf': {
+    name: 'Lock PDF',
+    badge: 'Security',
+    desc: 'Encrypt your PDF document with strong password protection.',
+    endpoint: '/api/pdf/encrypt',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Set Password:</label>
+        <input type="password" id="encryptPasswordInput" class="form-control" placeholder="Enter password to lock PDF" value="123456">
+      </div>`
+  },
+  'unlock-pdf': {
+    name: 'Unlock PDF',
+    badge: 'Security',
+    desc: 'Remove password security from an encrypted PDF document.',
+    endpoint: '/api/pdf/decrypt',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>PDF Password:</label>
+        <input type="password" id="decryptPasswordInput" class="form-control" placeholder="Enter current password" value="123456">
+      </div>`
+  },
+  'page-numbers': {
+    name: 'Add Page Numbers & Header',
+    badge: 'Basic Tool',
+    desc: 'Add custom header text, footer, and automatic page numbering.',
+    endpoint: '/api/pdf/header-footer',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Header Text:</label>
+        <input type="text" id="headerTextInput" class="form-control" placeholder="e.g. Confidential Document" value="PDF AI Toolkit">
+      </div>
+      <div class="form-group mt-2">
+        <label>Footer Text:</label>
+        <input type="text" id="footerTextInput" class="form-control" placeholder="e.g. All Rights Reserved" value="All Rights Reserved">
+      </div>`
+  },
+  'delete-pages': {
+    name: 'Delete Pages',
+    badge: 'Basic Tool',
+    desc: 'Select specific page numbers to remove from your document.',
+    endpoint: '/api/pdf/organize',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Page Number to Delete:</label>
+        <input type="number" id="deletePageNumInput" class="form-control" min="1" value="1">
+      </div>`
+  },
+  'extract-pages': {
+    name: 'Extract Pages',
+    badge: 'Basic Tool',
+    desc: 'Extract specific pages into a new standalone PDF document.',
+    endpoint: '/api/pdf/split',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Pages to Extract (e.g. 1-3, 5):</label>
+        <input type="text" id="extractPagesInput" class="form-control" value="1-2">
+      </div>`
+  },
+  'pdf-to-text': {
+    name: 'PDF to Text',
+    badge: 'Conversion',
+    desc: 'Extract all raw text content from a PDF into a clean .txt file.',
+    endpoint: '/api/convert/pdf-to-text',
+    multiple: false,
+    renderOptions: () => '<p class="text-muted">Extracts structured raw text content from document pages.</p>'
+  },
+  'html-to-pdf': {
+    name: 'HTML / Text to PDF',
+    badge: 'Conversion',
+    desc: 'Convert formatted text or HTML code directly into a formatted PDF document.',
+    endpoint: '/api/convert/text-to-pdf',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>HTML or Text Content:</label>
+        <textarea id="htmlTextInput" class="form-control" rows="5" placeholder="Enter HTML or text content here..."><h1>Sample HTML Title</h1><p>This is a converted PDF page generated from raw HTML text.</p></textarea>
+      </div>`
+  },
+  'qr-code': {
+    name: 'Add QR Code to PDF',
+    badge: 'Tool',
+    desc: 'Generate and stamp a QR Code onto all pages of your PDF document.',
+    endpoint: '/api/pdf/qrcode',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>QR Code Content / URL:</label>
+        <input type="text" id="qrTextInput" class="form-control" value="https://pdftoolkit.ai">
+      </div>`
   }
 };
 
@@ -418,8 +514,9 @@ async function executeToolProcess() {
   }
 
   // Gather Tool Options
-  if (appState.currentTool === 'split') {
-    formData.append('pages', document.getElementById('splitPagesInput').value);
+  if (appState.currentTool === 'split' || appState.currentTool === 'extract-pages') {
+    const input = document.getElementById('extractPagesInput') || document.getElementById('splitPagesInput');
+    formData.append('pages', input ? input.value : '1-2');
   } else if (appState.currentTool === 'rotate') {
     formData.append('degrees', document.getElementById('rotateDegreesSelect').value);
   } else if (appState.currentTool === 'watermark') {
@@ -427,8 +524,21 @@ async function executeToolProcess() {
   } else if (appState.currentTool === 'organize') {
     formData.append('action', document.getElementById('organizeActionSelect').value);
     formData.append('pagesToDelete', JSON.stringify([parseInt(document.getElementById('organizePagesInput').value, 10)]));
-  } else if (appState.currentTool === 'security') {
+  } else if (appState.currentTool === 'delete-pages') {
+    formData.append('action', 'delete');
+    formData.append('pagesToDelete', JSON.stringify([parseInt(document.getElementById('deletePageNumInput').value, 10)]));
+  } else if (appState.currentTool === 'security' || appState.currentTool === 'lock-pdf') {
     formData.append('password', document.getElementById('encryptPasswordInput').value);
+  } else if (appState.currentTool === 'unlock-pdf') {
+    formData.append('password', document.getElementById('decryptPasswordInput').value);
+  } else if (appState.currentTool === 'page-numbers') {
+    formData.append('headerText', document.getElementById('headerTextInput').value);
+    formData.append('footerText', document.getElementById('footerTextInput').value);
+    formData.append('includePageNumbers', 'true');
+  } else if (appState.currentTool === 'html-to-pdf') {
+    formData.append('text', document.getElementById('htmlTextInput').value);
+  } else if (appState.currentTool === 'qr-code') {
+    formData.append('qrText', document.getElementById('qrTextInput').value);
   } else if (appState.currentTool === 'ai-analyzer') {
     formData.append('docType', document.getElementById('analyzerTypeSelect').value);
   } else if (appState.currentTool === 'ocr') {

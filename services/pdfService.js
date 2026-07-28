@@ -343,6 +343,41 @@ class PDFService {
   }
 
   /**
+   * Add QR Code to PDF document pages.
+   */
+  static async addQRCodeToPDF(filePath, qrText = 'https://pdftoolkit.ai') {
+    const QRCode = require('qrcode');
+    const qrImageBuffer = await QRCode.toBuffer(qrText, { type: 'png', width: 200 });
+    const fileBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+
+    const qrImage = await pdfDoc.embedPng(qrImageBuffer);
+    const pages = pdfDoc.getPages();
+
+    pages.forEach(page => {
+      const { width, height } = page.getSize();
+      page.drawImage(qrImage, {
+        x: width - 120,
+        y: 20,
+        width: 100,
+        height: 100
+      });
+    });
+
+    const pdfBytes = await pdfDoc.save();
+    const outputFilename = generateFilename('qrcode_stamped_doc', 'qr_pdf', '.pdf');
+    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    fs.writeFileSync(outputPath, pdfBytes);
+
+    return {
+      filename: outputFilename,
+      path: outputPath,
+      url: `/downloads/${outputFilename}`,
+      size: pdfBytes.length
+    };
+  }
+
+  /**
    * Extract Raw Text from PDF file.
    */
   static async extractText(filePath) {
