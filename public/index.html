@@ -336,6 +336,11 @@
               <p id="activeToolDesc">Tool description guidelines will be displayed here.</p>
             </div>
 
+            <!-- Action Configuration Options (Target KB Range Dropdown, Compression Level, etc.) -->
+            <div class="tool-options-box" id="toolOptionsBox" style="margin-bottom: 20px;">
+              <!-- Options populated dynamically depending on selected tool -->
+            </div>
+
             <!-- Upload Area Drag & Drop -->
             <div class="dropzone" id="dropzone">
               <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.txt,.html" hidden>
@@ -351,11 +356,6 @@
 
             <!-- File List Preview Container -->
             <div class="selected-files-list" id="selectedFilesList"></div>
-
-            <!-- Action Configuration Options -->
-            <div class="tool-options-box" id="toolOptionsBox">
-              <!-- Options populated dynamically depending on selected tool -->
-            </div>
 
             <!-- Animated Progress Bar -->
             <div class="progress-wrapper" id="progressWrapper" style="display: none;">
