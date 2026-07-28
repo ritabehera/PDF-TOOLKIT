@@ -492,6 +492,33 @@ function updateFileListUI() {
     `;
     listContainer.appendChild(item);
   });
+
+  // Render visual page thumbnail selector if page-based tool
+  let visualThumbContainer = document.getElementById('visualPageSelectorContainer');
+  if (!visualThumbContainer) {
+    visualThumbContainer = document.createElement('div');
+    visualThumbContainer.id = 'visualPageSelectorContainer';
+    listContainer.after(visualThumbContainer);
+  }
+  visualThumbContainer.innerHTML = '';
+
+  const pageTools = ['compress', 'split', 'extract-pages', 'delete-pages', 'organize'];
+  if (pageTools.includes(appState.currentTool) && appState.selectedFiles.length > 0) {
+    const firstFile = appState.selectedFiles[0];
+    if (firstFile.name.toLowerCase().endsWith('.pdf') && window.PDFPreviewRenderer) {
+      window.PDFPreviewRenderer.renderPageThumbnails(firstFile, visualThumbContainer, (rangeStr) => {
+        const compressInput = document.getElementById('compressPagesInput');
+        const extractInput = document.getElementById('extractPagesInput');
+        const splitInput = document.getElementById('splitPagesInput');
+        const deleteInput = document.getElementById('deletePageNumInput');
+
+        if (compressInput) compressInput.value = rangeStr || 'all';
+        if (extractInput) extractInput.value = rangeStr || '1-2';
+        if (splitInput) splitInput.value = rangeStr || 'all';
+        if (deleteInput && rangeStr) deleteInput.value = rangeStr.split(',')[0].trim() || '1';
+      });
+    }
+  }
 }
 
 function removeSelectedFile(index) {
