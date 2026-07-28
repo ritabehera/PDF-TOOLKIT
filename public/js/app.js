@@ -92,33 +92,38 @@ const toolRegistry = {
   compress: {
     name: 'Compress PDF',
     badge: 'Basic Tool',
-    desc: 'Reduce file size with custom Target Size Range (e.g., 100 to 200 KB) and specific page selection.',
+    desc: 'Select Target Size Range (e.g. 1-100 KB, 100-200 KB) and specific page selection.',
     endpoint: '/api/pdf/compress',
     multiple: false,
     renderOptions: () => `
       <div class="form-group">
+        <label><i class="fa-solid fa-sliders"></i> Target File Size Range (Select KB Range):</label>
+        <select id="compressRangePresetSelect" class="form-control" onchange="onCompressRangePresetChange(this.value)">
+          <option value="1-100" selected>1 KB to 100 KB (Extreme Compression)</option>
+          <option value="100-200">100 KB to 200 KB (High Compression)</option>
+          <option value="200-500">200 KB to 500 KB (Medium Compression)</option>
+          <option value="500-1000">500 KB to 1 MB (Standard Compression)</option>
+          <option value="custom">Custom KB Range (User Input)</option>
+        </select>
+      </div>
+
+      <div class="form-group mt-2" id="customKBRangeBox">
+        <label>Selected Target Limit (Min KB to Max KB):</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+          <input type="number" id="compressMinKBInput" class="form-control" placeholder="Min KB" value="1" style="flex:1;">
+          <span style="color:var(--text-muted);">to</span>
+          <input type="number" id="compressMaxKBInput" class="form-control" placeholder="Max KB" value="100" style="flex:1;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">KB</span>
+        </div>
+      </div>
+
+      <div class="form-group mt-2">
         <label>Compression Level:</label>
         <select id="compressLevelSelect" class="form-control">
           <option value="recommended" selected>Recommended Compression (Balanced Quality & Size)</option>
           <option value="extreme">Extreme Compression (Smallest File Size)</option>
           <option value="low">Low Compression (Highest Quality)</option>
         </select>
-      </div>
-
-      <div class="form-group mt-2">
-        <label><i class="fa-solid fa-sliders"></i> Target File Size Limit / Range (KB):</label>
-        <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
-          <input type="number" id="compressMinKBInput" class="form-control" placeholder="Min KB (e.g. 100)" value="100" style="flex:1;">
-          <span style="color:var(--text-muted);">to</span>
-          <input type="number" id="compressMaxKBInput" class="form-control" placeholder="Max KB (e.g. 200)" value="200" style="flex:1;">
-          <span style="color:var(--text-muted); font-size:0.85rem;">KB</span>
-        </div>
-        <div class="quick-size-presets" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
-          <button type="button" class="chip-btn" onclick="setCompressKBRange(50, 100)">50 - 100 KB</button>
-          <button type="button" class="chip-btn" onclick="setCompressKBRange(100, 200)">100 - 200 KB</button>
-          <button type="button" class="chip-btn" onclick="setCompressKBRange(200, 500)">200 - 500 KB</button>
-          <button type="button" class="chip-btn" onclick="setCompressKBRange(0, 1000)">Under 1 MB</button>
-        </div>
       </div>
 
       <div class="form-group mt-2">
@@ -548,6 +553,26 @@ function setCompressKBRange(min, max) {
   const maxInput = document.getElementById('compressMaxKBInput');
   if (minInput) minInput.value = min;
   if (maxInput) maxInput.value = max;
+}
+
+function onCompressRangePresetChange(val) {
+  const minInput = document.getElementById('compressMinKBInput');
+  const maxInput = document.getElementById('compressMaxKBInput');
+  if (!minInput || !maxInput) return;
+
+  if (val === '1-100') {
+    minInput.value = 1;
+    maxInput.value = 100;
+  } else if (val === '100-200') {
+    minInput.value = 100;
+    maxInput.value = 200;
+  } else if (val === '200-500') {
+    minInput.value = 200;
+    maxInput.value = 500;
+  } else if (val === '500-1000') {
+    minInput.value = 500;
+    maxInput.value = 1000;
+  }
 }
 
 // Process Document Execution Handler
