@@ -13,6 +13,15 @@ const { authenticateToken } = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
 const { ensureDirectories } = require('./utils/fileHelpers');
 
+// Process Safety Handlers for Unhandled Worker Rejections
+process.on('uncaughtException', (err) => {
+  console.error('[Process Safety] Uncaught Exception:', err.message);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Process Safety] Unhandled Rejection:', reason);
+});
+
 // Import Routers
 const pdfRoutes = require('./routes/pdfRoutes');
 const aiRoutes = require('./routes/aiRoutes');

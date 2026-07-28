@@ -9,6 +9,27 @@ class OCRService {
    * Perform OCR on an image file (PNG, JPG, BMP, WEBP, etc.)
    */
   static async recognizeImage(imagePath, language = 'eng') {
+    const ext = path.extname(imagePath).toLowerCase();
+    
+    // If the input file is a PDF file, extract text via PDFService instead of passing raw PDF to Tesseract
+    if (ext === '.pdf') {
+      const PDFService = require('./pdfService');
+      try {
+        const { text } = await PDFService.extractText(imagePath);
+        return {
+          text: text || 'No readable text found in PDF.',
+          confidence: 95,
+          language: language || 'eng'
+        };
+      } catch (err) {
+        return {
+          text: 'Failed to extract text from PDF document.',
+          confidence: 0,
+          language: language || 'eng'
+        };
+      }
+    }
+
     const langMap = {
       'eng': 'eng',
       'spa': 'spa',
@@ -20,15 +41,24 @@ class OCRService {
 
     const targetLang = langMap[language] || 'eng';
 
-    const result = await Tesseract.recognize(imagePath, targetLang, {
-      logger: m => console.log(`[OCR Progress] ${m.status}: ${Math.round((m.progress || 0) * 100)}%`)
-    });
+    try {
+      const result = await Tesseract.recognize(imagePath, targetLang, {
+        logger: m => console.log(`[OCR Progress] ${m.status}: ${Math.round((m.progress || 0) * 100)}%`)
+      });
 
-    return {
-      text: result.data.text,
-      confidence: Math.round(result.data.confidence),
-      language: targetLang
-    };
+      return {
+        text: result.data ? result.data.text : '',
+        confidence: result.data ? Math.round(result.data.confidence) : 0,
+        language: targetLang
+      };
+    } catch (err) {
+      console.warn('Tesseract OCR error:', err.message);
+      return {
+        text: 'OCR processing error: Please upload a valid PNG, JPG, or WEBP image file.',
+        confidence: 0,
+        language: targetLang
+      };
+    }
   }
 
   /**
