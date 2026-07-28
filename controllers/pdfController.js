@@ -79,7 +79,10 @@ class PDFController {
     try {
       if (!req.file) return res.status(400).json({ error: 'Please upload a PDF file.' });
 
-      const result = await PDFService.compressPDF(req.file.path);
+      const level = req.body.level || 'recommended';
+      const pageRange = req.body.pages || req.body.pageRange || 'all';
+
+      const result = await PDFService.compressPDF(req.file.path, { level, pageRange });
 
       cleanupFile(req.file.path);
 

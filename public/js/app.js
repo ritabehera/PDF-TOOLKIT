@@ -92,10 +92,22 @@ const toolRegistry = {
   compress: {
     name: 'Compress PDF',
     badge: 'Basic Tool',
-    desc: 'Reduce file size while preserving high visual quality.',
+    desc: 'Reduce file size while selecting compression level and page range.',
     endpoint: '/api/pdf/compress',
     multiple: false,
-    renderOptions: () => '<p class="text-muted">Smart stream compression will be automatically applied upon execution.</p>'
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Compression Level:</label>
+        <select id="compressLevelSelect" class="form-control">
+          <option value="recommended" selected>Recommended Compression (Balanced Quality & Size)</option>
+          <option value="extreme">Extreme Compression (Smallest File Size)</option>
+          <option value="low">Low Compression (Highest Quality)</option>
+        </select>
+      </div>
+      <div class="form-group mt-2">
+        <label>Page Range to Compress:</label>
+        <input type="text" id="compressPagesInput" class="form-control" placeholder="e.g. 1-5 or all" value="all">
+      </div>`
   },
   watermark: {
     name: 'Watermark PDF',
@@ -523,7 +535,12 @@ async function executeToolProcess() {
   }
 
   // Gather Tool Options
-  if (appState.currentTool === 'split' || appState.currentTool === 'extract-pages') {
+  if (appState.currentTool === 'compress') {
+    const levelSelect = document.getElementById('compressLevelSelect');
+    const pagesInput = document.getElementById('compressPagesInput');
+    if (levelSelect) formData.append('level', levelSelect.value);
+    if (pagesInput) formData.append('pages', pagesInput.value);
+  } else if (appState.currentTool === 'split' || appState.currentTool === 'extract-pages') {
     const input = document.getElementById('extractPagesInput') || document.getElementById('splitPagesInput');
     formData.append('pages', input ? input.value : '1-2');
   } else if (appState.currentTool === 'rotate') {
@@ -601,8 +618,21 @@ function renderResult(data) {
   const res = data.result || data;
 
   if (res.url) {
+    let extraMetrics = '';
+    if (res.originalSize && res.newSize) {
+      extraMetrics = `
+        <div style="display:flex; gap:12px; margin: 12px 0; flex-wrap:wrap;">
+          <span class="badge badge-ai">Original Size: ${(res.originalSize / (1024 * 1024)).toFixed(2)} MB</span>
+          <span class="badge badge-ai" style="background:rgba(16, 185, 129, 0.2); color:#10b981;">New Size: ${(res.newSize / (1024 * 1024)).toFixed(2)} MB</span>
+          <span class="badge badge-ai">Savings: ${res.savingsPercent || 0}%</span>
+          ${res.pageCount ? `<span class="badge badge-ai">Pages: ${res.pageCount}</span>` : ''}
+        </div>
+      `;
+    }
+
     resultContent.innerHTML = `
       <p>Your processed file is ready for download:</p>
+      ${extraMetrics}
       <div style="margin-top: 12px;">
         <a href="${res.url}" download="${res.filename}" class="btn btn-primary btn-glow">
           <i class="fa-solid fa-download"></i> Download ${res.filename}

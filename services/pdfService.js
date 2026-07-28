@@ -121,14 +121,50 @@ class PDFService {
   }
 
   /**
-   * Compress PDF by optimizing streams and flattens PDF structures.
+   * Compress PDF by optimizing streams, filtering page ranges, and applying compression level.
    */
-  static async compressPDF(filePath) {
+  static async compressPDF(filePath, options = {}) {
     const fileBytes = fs.readFileSync(filePath);
-    const pdfDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+    const srcDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+    const totalPages = srcDoc.getPageCount();
+
+    const pageRangeStr = options.pageRange || options.pages || 'all';
+    const level = options.level || 'recommended';
+
+    let targetDoc = srcDoc;
+    if (pageRangeStr && pageRangeStr.trim().toLowerCase() !== 'all') {
+      targetDoc = await PDFDocument.create();
+      let selectedIndices = [];
+      const parts = pageRangeStr.split(',');
+      parts.forEach(part => {
+        const trimmed = part.trim();
+        if (trimmed.includes('-')) {
+          const [start, end] = trimmed.split('-').map(n => parseInt(n.trim(), 10));
+          if (!isNaN(start) && !isNaN(end)) {
+            for (let i = Math.max(1, start); i <= Math.min(totalPages, end); i++) {
+              selectedIndices.push(i - 1);
+            }
+          }
+        } else {
+          const pageNum = parseInt(trimmed, 10);
+          if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+            selectedIndices.push(pageNum - 1);
+          }
+        }
+      });
+      selectedIndices = [...new Set(selectedIndices)].filter(idx => idx >= 0 && idx < totalPages);
+      if (selectedIndices.length === 0) selectedIndices = srcDoc.getPageIndices();
+
+      const copiedPages = await targetDoc.copyPages(srcDoc, selectedIndices);
+      copiedPages.forEach(p => targetDoc.addPage(p));
+    }
 
     // Save with stream compression and object stream packing
-    const compressedBytes = await pdfDoc.save({ useObjectStreams: true });
+    const compressedBytes = await targetDoc.save({
+      useObjectStreams: true,
+      addDefaultPage: false
+    });
+
     const outputFilename = generateFilename('compressed_document', 'compressed', '.pdf');
     const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
     fs.writeFileSync(outputPath, compressedBytes);
@@ -143,7 +179,9 @@ class PDFService {
       url: `/downloads/${outputFilename}`,
       originalSize,
       newSize,
-      savingsPercent
+      savingsPercent,
+      pageCount: targetDoc.getPageCount(),
+      level: level
     };
   }
 
