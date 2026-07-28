@@ -81,8 +81,10 @@ class PDFController {
 
       const level = req.body.level || 'recommended';
       const pageRange = req.body.pages || req.body.pageRange || 'all';
+      const minKB = req.body.minKB || 0;
+      const maxKB = req.body.maxKB || req.body.targetSizeKB || 0;
 
-      const result = await PDFService.compressPDF(req.file.path, { level, pageRange });
+      const result = await PDFService.compressPDF(req.file.path, { level, pageRange, minKB, maxKB });
 
       cleanupFile(req.file.path);
 

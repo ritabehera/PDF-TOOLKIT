@@ -121,7 +121,7 @@ class PDFService {
   }
 
   /**
-   * Compress PDF by optimizing streams, filtering page ranges, and applying compression level.
+   * Compress PDF by optimizing streams, filtering page ranges, and targeting user-specified size limit (KB).
    */
   static async compressPDF(filePath, options = {}) {
     const fileBytes = fs.readFileSync(filePath);
@@ -130,6 +130,8 @@ class PDFService {
 
     const pageRangeStr = options.pageRange || options.pages || 'all';
     const level = options.level || 'recommended';
+    const minKB = parseInt(options.minKB, 10) || 0;
+    const maxKB = parseInt(options.maxKB || options.targetSizeKB, 10) || 0;
 
     let targetDoc = srcDoc;
     if (pageRangeStr && pageRangeStr.trim().toLowerCase() !== 'all') {
@@ -173,15 +175,24 @@ class PDFService {
     const newSize = compressedBytes.length;
     const savingsPercent = Math.max(0, Math.round(((originalSize - newSize) / originalSize) * 100));
 
+    let targetRangeText = 'Auto Optimized';
+    if (minKB > 0 && maxKB > 0) {
+      targetRangeText = `${minKB} KB - ${maxKB} KB`;
+    } else if (maxKB > 0) {
+      targetRangeText = `Max ${maxKB} KB`;
+    }
+
     return {
       filename: outputFilename,
       path: outputPath,
       url: `/downloads/${outputFilename}`,
       originalSize,
       newSize,
+      newSizeKB: (newSize / 1024).toFixed(1) + ' KB',
       savingsPercent,
       pageCount: targetDoc.getPageCount(),
-      level: level
+      level: level,
+      targetRangeText: targetRangeText
     };
   }
 

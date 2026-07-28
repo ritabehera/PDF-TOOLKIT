@@ -92,7 +92,7 @@ const toolRegistry = {
   compress: {
     name: 'Compress PDF',
     badge: 'Basic Tool',
-    desc: 'Reduce file size while selecting compression level and page range.',
+    desc: 'Reduce file size with custom Target Size Range (e.g., 100 to 200 KB) and specific page selection.',
     endpoint: '/api/pdf/compress',
     multiple: false,
     renderOptions: () => `
@@ -104,6 +104,23 @@ const toolRegistry = {
           <option value="low">Low Compression (Highest Quality)</option>
         </select>
       </div>
+
+      <div class="form-group mt-2">
+        <label><i class="fa-solid fa-sliders"></i> Target File Size Limit / Range (KB):</label>
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:8px;">
+          <input type="number" id="compressMinKBInput" class="form-control" placeholder="Min KB (e.g. 100)" value="100" style="flex:1;">
+          <span style="color:var(--text-muted);">to</span>
+          <input type="number" id="compressMaxKBInput" class="form-control" placeholder="Max KB (e.g. 200)" value="200" style="flex:1;">
+          <span style="color:var(--text-muted); font-size:0.85rem;">KB</span>
+        </div>
+        <div class="quick-size-presets" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:8px;">
+          <button type="button" class="chip-btn" onclick="setCompressKBRange(50, 100)">50 - 100 KB</button>
+          <button type="button" class="chip-btn" onclick="setCompressKBRange(100, 200)">100 - 200 KB</button>
+          <button type="button" class="chip-btn" onclick="setCompressKBRange(200, 500)">200 - 500 KB</button>
+          <button type="button" class="chip-btn" onclick="setCompressKBRange(0, 1000)">Under 1 MB</button>
+        </div>
+      </div>
+
       <div class="form-group mt-2">
         <label>Page Range to Compress:</label>
         <input type="text" id="compressPagesInput" class="form-control" placeholder="e.g. 1-5 or all" value="all">
@@ -526,6 +543,13 @@ function removeSelectedFile(index) {
   updateFileListUI();
 }
 
+function setCompressKBRange(min, max) {
+  const minInput = document.getElementById('compressMinKBInput');
+  const maxInput = document.getElementById('compressMaxKBInput');
+  if (minInput) minInput.value = min;
+  if (maxInput) maxInput.value = max;
+}
+
 // Process Document Execution Handler
 async function executeToolProcess() {
   const toolMeta = toolRegistry[appState.currentTool];
@@ -565,8 +589,13 @@ async function executeToolProcess() {
   if (appState.currentTool === 'compress') {
     const levelSelect = document.getElementById('compressLevelSelect');
     const pagesInput = document.getElementById('compressPagesInput');
+    const minInput = document.getElementById('compressMinKBInput');
+    const maxInput = document.getElementById('compressMaxKBInput');
+
     if (levelSelect) formData.append('level', levelSelect.value);
     if (pagesInput) formData.append('pages', pagesInput.value);
+    if (minInput) formData.append('minKB', minInput.value);
+    if (maxInput) formData.append('maxKB', maxInput.value);
   } else if (appState.currentTool === 'split' || appState.currentTool === 'extract-pages') {
     const input = document.getElementById('extractPagesInput') || document.getElementById('splitPagesInput');
     formData.append('pages', input ? input.value : '1-2');
