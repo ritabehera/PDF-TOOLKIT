@@ -827,14 +827,13 @@ async function loadAdminMetrics() {
 // Theme Toggle Handler
 function initThemeToggle() {
   const btn = document.getElementById('themeToggleBtn');
-  const icon = document.getElementById('themeToggleIcon');
-  if (!btn || !icon) return;
+  const icon = document.getElementById('themeIcon') || document.getElementById('themeToggleIcon');
+  if (!btn) return;
 
+  // Apply active saved theme from localStorage/appState
   document.documentElement.setAttribute('data-theme', appState.theme);
-  if (appState.theme === 'light') {
-    icon.className = 'fa-solid fa-sun';
-  } else {
-    icon.className = 'fa-solid fa-moon';
+  if (icon) {
+    icon.className = appState.theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   }
 
   btn.addEventListener('click', () => {
@@ -842,11 +841,12 @@ function initThemeToggle() {
     document.documentElement.setAttribute('data-theme', appState.theme);
     localStorage.setItem('pdf_theme', appState.theme);
 
-    if (appState.theme === 'light') {
-      icon.className = 'fa-solid fa-sun';
-    } else {
-      icon.className = 'fa-solid fa-moon';
+    const activeIcon = document.getElementById('themeIcon') || document.getElementById('themeToggleIcon');
+    if (activeIcon) {
+      activeIcon.className = appState.theme === 'light' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
     }
+
+    showToast(`Switched to ${appState.theme.toUpperCase()} theme mode!`, 'info');
   });
 }
 
