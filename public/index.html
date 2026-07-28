@@ -52,95 +52,95 @@
 
       <div class="sidebar-search">
         <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" id="toolSearchInput" placeholder="Search tools (e.g., merge, ocr, summary)...">
+        <input type="text" id="toolSearchInput" data-i18n-placeholder="searchTools" placeholder="Search tools (e.g., merge, ocr, summary)...">
       </div>
 
       <nav class="sidebar-nav">
         <div class="nav-section">
-          <span class="nav-section-title">Core & Basic</span>
-          <a href="#" class="nav-item active" data-tool="dashboard">
+          <span class="nav-section-title" data-i18n="basicTools">Core & Basic</span>
+          <a href="#" class="nav-item active" data-tool="dashboard" data-i18n="dashboard">
             <i class="fa-solid fa-chart-line"></i> Dashboard
           </a>
-          <a href="#" class="nav-item" data-tool="merge">
+          <a href="#" class="nav-item" data-tool="merge" data-i18n="mergePdf">
             <i class="fa-solid fa-object-group"></i> Merge PDF
           </a>
-          <a href="#" class="nav-item" data-tool="split">
+          <a href="#" class="nav-item" data-tool="split" data-i18n="splitPdf">
             <i class="fa-solid fa-scissors"></i> Split PDF
           </a>
-          <a href="#" class="nav-item" data-tool="extract-pages">
+          <a href="#" class="nav-item" data-tool="extract-pages" data-i18n="extractPages">
             <i class="fa-solid fa-file-export"></i> Extract Pages
           </a>
-          <a href="#" class="nav-item" data-tool="delete-pages">
+          <a href="#" class="nav-item" data-tool="delete-pages" data-i18n="deletePages">
             <i class="fa-solid fa-trash-can"></i> Delete Pages
           </a>
-          <a href="#" class="nav-item" data-tool="compress">
+          <a href="#" class="nav-item" data-tool="compress" data-i18n="compressPdf">
             <i class="fa-solid fa-file-contract"></i> Compress PDF
           </a>
-          <a href="#" class="nav-item" data-tool="rotate">
+          <a href="#" class="nav-item" data-tool="rotate" data-i18n="rotatePdf">
             <i class="fa-solid fa-rotate-right"></i> Rotate PDF
           </a>
-          <a href="#" class="nav-item" data-tool="page-numbers">
+          <a href="#" class="nav-item" data-tool="page-numbers" data-i18n="pageNumbers">
             <i class="fa-solid fa-list-ol"></i> Add Page Numbers
           </a>
-          <a href="#" class="nav-item" data-tool="watermark">
+          <a href="#" class="nav-item" data-tool="watermark" data-i18n="watermarkPdf">
             <i class="fa-solid fa-stamp"></i> Watermark PDF
           </a>
-          <a href="#" class="nav-item" data-tool="qr-code">
+          <a href="#" class="nav-item" data-tool="qr-code" data-i18n="qrCodePdf">
             <i class="fa-solid fa-qrcode"></i> Add QR Code
           </a>
-          <a href="#" class="nav-item" data-tool="lock-pdf">
+          <a href="#" class="nav-item" data-tool="lock-pdf" data-i18n="lockPdf">
             <i class="fa-solid fa-lock"></i> Lock PDF
           </a>
-          <a href="#" class="nav-item" data-tool="unlock-pdf">
+          <a href="#" class="nav-item" data-tool="unlock-pdf" data-i18n="unlockPdf">
             <i class="fa-solid fa-lock-open"></i> Unlock PDF
           </a>
         </div>
 
         <div class="nav-section">
-          <span class="nav-section-title">AI Intelligence</span>
-          <a href="#" class="nav-item" data-tool="ai-summary">
+          <span class="nav-section-title" data-i18n="aiIntelligence">AI Intelligence</span>
+          <a href="#" class="nav-item" data-tool="ai-summary" data-i18n="aiSummarizer">
             <i class="fa-solid fa-wand-magic-sparkles"></i> AI Summary
           </a>
-          <a href="#" class="nav-item" data-tool="ai-chat">
+          <a href="#" class="nav-item" data-tool="ai-chat" data-i18n="aiPdfChat">
             <i class="fa-solid fa-comments"></i> AI Chat with PDF
           </a>
-          <a href="#" class="nav-item" data-tool="ai-explain">
+          <a href="#" class="nav-item" data-tool="ai-explain" data-i18n="aiIntelligence">
             <i class="fa-solid fa-lightbulb"></i> AI Explain PDF
           </a>
-          <a href="#" class="nav-item" data-tool="ai-quiz">
+          <a href="#" class="nav-item" data-tool="ai-quiz" data-i18n="aiIntelligence">
             <i class="fa-solid fa-graduation-cap"></i> AI Flashcards & Quiz
           </a>
-          <a href="#" class="nav-item" data-tool="ai-analyzer">
+          <a href="#" class="nav-item" data-tool="ai-analyzer" data-i18n="aiDocAnalyzer">
             <i class="fa-solid fa-microscope"></i> AI Document Analyzer
           </a>
         </div>
 
         <div class="nav-section">
-          <span class="nav-section-title">Conversion & OCR</span>
-          <a href="#" class="nav-item" data-tool="pdf-to-text">
+          <span class="nav-section-title" data-i18n="ocrConverters">Conversion & OCR</span>
+          <a href="#" class="nav-item" data-tool="pdf-to-text" data-i18n="pdfToText">
             <i class="fa-solid fa-file-lines"></i> PDF to Text
           </a>
-          <a href="#" class="nav-item" data-tool="html-to-pdf">
+          <a href="#" class="nav-item" data-tool="html-to-pdf" data-i18n="htmlToPdf">
             <i class="fa-solid fa-code"></i> HTML to PDF
           </a>
-          <a href="#" class="nav-item" data-tool="convert">
+          <a href="#" class="nav-item" data-tool="convert" data-i18n="formatConversions">
             <i class="fa-solid fa-right-left"></i> Format Conversions
           </a>
-          <a href="#" class="nav-item" data-tool="ocr">
+          <a href="#" class="nav-item" data-tool="ocr" data-i18n="ocrImageToText">
             <i class="fa-solid fa-eye"></i> OCR Image to Text
           </a>
         </div>
 
         <div class="nav-section">
-          <span class="nav-section-title">Canvas Editor & Sign</span>
-          <a href="#" class="nav-item" data-tool="canvas-editor">
+          <span class="nav-section-title" data-i18n="canvasEditorSign">Canvas Editor & Sign</span>
+          <a href="#" class="nav-item" data-tool="canvas-editor" data-i18n="drawSignCanvas">
             <i class="fa-solid fa-pen-nib"></i> Draw & Sign Canvas
           </a>
         </div>
 
         <div class="nav-section">
           <span class="nav-section-title">System & Account</span>
-          <a href="#" class="nav-item" data-tool="history">
+          <a href="#" class="nav-item" data-tool="history" data-i18n="historyLogs">
             <i class="fa-solid fa-clock-rotate-left"></i> History & Logs
           </a>
           <a href="#" class="nav-item" data-tool="admin">
@@ -166,9 +166,16 @@
         </div>
 
         <div class="nav-right">
+          <!-- Multi-Language Selector Dropdown -->
+          <select id="languageSelect" class="form-control language-selector" onchange="window.I18n.setLanguage(this.value)" title="Select Language / भाषा चुनें / ଭାଷା ବାଛନ୍ତୁ" style="padding: 6px 12px; border-radius: var(--radius-md); background: var(--glass-bg); color: var(--text-main); border: 1px solid var(--glass-border); font-size: 0.85rem; font-weight: 500; cursor: pointer; backdrop-filter: blur(12px);">
+            <option value="en">🌐 English</option>
+            <option value="hi">🇮🇳 हिंदी (Hindi)</option>
+            <option value="or">🇮🇳 ଓଡ଼ିଆ (Odia)</option>
+          </select>
+
           <!-- Voice Assistant Button -->
           <button class="btn btn-glass voice-btn" id="voiceAssistantBtn" title="Voice Assistant">
-            <i class="fa-solid fa-microphone"></i> <span>Voice AI</span>
+            <i class="fa-solid fa-microphone"></i> <span data-i18n="voiceAi">Voice AI</span>
           </button>
 
           <!-- Theme Toggle -->
@@ -195,14 +202,14 @@
           <!-- Hero Banner -->
           <div class="hero-card glass-card">
             <div class="hero-content">
-              <div class="hero-badge"><i class="fa-solid fa-bolt"></i> Next-Gen AI Toolkit 2.0</div>
-              <h2>Supercharge Your PDF Workflow with AI</h2>
-              <p>Merge, compress, edit, convert, running high-accuracy OCR, and chatting with documents in real time using built-in intelligence.</p>
+              <div class="hero-badge" data-i18n="heroBadge"><i class="fa-solid fa-bolt"></i> Next-Gen AI Toolkit 2.0</div>
+              <h2 data-i18n="heroTitle">Supercharge Your PDF Workflow with AI</h2>
+              <p data-i18n="heroDesc">Merge, compress, edit, convert, running high-accuracy OCR, and chatting with documents in real time using built-in intelligence.</p>
               <div class="hero-actions">
-                <button class="btn btn-primary btn-glow" onclick="switchTool('merge')">
+                <button class="btn btn-primary btn-glow" onclick="switchTool('merge')" data-i18n="quickMerge">
                   <i class="fa-solid fa-object-group"></i> Quick Merge
                 </button>
-                <button class="btn btn-glass" onclick="switchTool('ai-summary')">
+                <button class="btn btn-glass" onclick="switchTool('ai-summary')" data-i18n="aiSummarize">
                   <i class="fa-solid fa-wand-magic-sparkles"></i> AI Summarize
                 </button>
               </div>
@@ -220,92 +227,78 @@
               <div class="metric-icon color-purple"><i class="fa-solid fa-file-circle-check"></i></div>
               <div class="metric-data">
                 <h3 id="statTotalFiles">0</h3>
-                <p>Files Processed</p>
+                <p data-i18n="filesProcessed">Files Processed</p>
               </div>
             </div>
             <div class="metric-card glass-card">
               <div class="metric-icon color-blue"><i class="fa-solid fa-brain"></i></div>
               <div class="metric-data">
                 <h3 id="statAiOps">0</h3>
-                <p>AI Insights Generated</p>
+                <p data-i18n="aiInsights">AI Insights Generated</p>
               </div>
             </div>
             <div class="metric-card glass-card">
               <div class="metric-icon color-green"><i class="fa-solid fa-shield-halved"></i></div>
               <div class="metric-data">
                 <h3>100%</h3>
-                <p>Secure File Encryption</p>
+                <p data-i18n="secureEncryption">Secure File Encryption</p>
               </div>
             </div>
             <div class="metric-card glass-card">
               <div class="metric-icon color-orange"><i class="fa-solid fa-bolt-lightning"></i></div>
               <div class="metric-data">
                 <h3>&lt; 1.2s</h3>
-                <p>Avg Processing Speed</p>
+                <p data-i18n="avgSpeed">Avg Processing Speed</p>
               </div>
             </div>
           </div>
 
           <!-- Tools Cards Grid -->
           <div class="section-title-bar">
-            <h3>Popular Tools</h3>
+            <h3 data-i18n="popularTools">Popular Tools</h3>
             <span class="subtext">Select a feature to get started</span>
           </div>
 
           <div class="tools-grid">
             <div class="tool-card glass-card" onclick="switchTool('merge')">
               <div class="tool-icon bg-gradient-1"><i class="fa-solid fa-object-group"></i></div>
-              <h4>Merge PDF</h4>
+              <h4 data-i18n="mergePdf">Merge PDF</h4>
               <p>Combine multiple PDF documents into a single organized file.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="tool-card glass-card" onclick="switchTool('split')">
               <div class="tool-icon bg-gradient-2"><i class="fa-solid fa-scissors"></i></div>
-              <h4>Split PDF</h4>
+              <h4 data-i18n="splitPdf">Split PDF</h4>
               <p>Extract specific pages or separate a PDF into multiple documents.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="tool-card glass-card" onclick="switchTool('compress')">
               <div class="tool-icon bg-gradient-3"><i class="fa-solid fa-file-contract"></i></div>
-              <h4>Compress PDF</h4>
+              <h4 data-i18n="compressPdf">Compress PDF</h4>
               <p>Reduce file size without sacrificing visual readability.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="tool-card glass-card" onclick="switchTool('ai-summary')">
-              <div class="tool-icon bg-gradient-4"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
-              <h4>AI PDF Summary</h4>
-              <p>Extract key takeaways, reading time, and bullet summaries instantly.</p>
-              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-            </div>
-
             <div class="tool-card glass-card" onclick="switchTool('ai-chat')">
-              <div class="tool-icon bg-gradient-5"><i class="fa-solid fa-comments"></i></div>
-              <h4>AI Chat with PDF</h4>
-              <p>Ask questions and interact with document content in real time.</p>
+              <div class="tool-icon bg-gradient-4"><i class="fa-solid fa-brain"></i></div>
+              <h4 data-i18n="aiPdfChat">AI Chat with PDF</h4>
+              <p>Ask questions and interact directly with your PDF documents using AI.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="tool-card glass-card" onclick="switchTool('ocr')">
-              <div class="tool-icon bg-gradient-6"><i class="fa-solid fa-eye"></i></div>
-              <h4>OCR Image to Text</h4>
-              <p>Extract text from scanned images and convert into searchable text.</p>
+              <div class="tool-icon bg-gradient-5"><i class="fa-solid fa-eye"></i></div>
+              <h4 data-i18n="ocrImageToText">OCR Image to Text</h4>
+              <p>Convert scanned documents & images into editable, searchable text.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
             <div class="tool-card glass-card" onclick="switchTool('canvas-editor')">
-              <div class="tool-icon bg-gradient-7"><i class="fa-solid fa-pen-nib"></i></div>
-              <h4>Draw & Digital Sign</h4>
-              <p>Draw freehand, add signature, highlight, and annotate on live pages.</p>
-              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-            </div>
-
-            <div class="tool-card glass-card" onclick="switchTool('convert')">
-              <div class="tool-icon bg-gradient-8"><i class="fa-solid fa-right-left"></i></div>
-              <h4>Format Converter</h4>
-              <p>Convert JPG/PNG to PDF, PDF to Text, HTML, and Word formats.</p>
+              <div class="tool-icon bg-gradient-6"><i class="fa-solid fa-pen-nib"></i></div>
+              <h4 data-i18n="drawSignCanvas">Draw & Sign Canvas</h4>
+              <p>Annotate pages, highlight key text, and stamp digital signatures.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
           </div>
@@ -327,9 +320,9 @@
                 <div class="dropzone-icon">
                   <i class="fa-solid fa-cloud-arrow-up"></i>
                 </div>
-                <h3>Drag & Drop files here</h3>
-                <p>or click to browse from your computer (PDF, PNG, JPG, TXT)</p>
-                <div class="file-limits">Supports up to 50MB per file</div>
+                <h3 data-i18n="dragDropTitle">Drag & Drop files here</h3>
+                <p data-i18n="dragDropDesc">or click to browse from your computer (PDF, PNG, JPG, TXT)</p>
+                <div class="file-limits" data-i18n="supportsMax">Supports up to 50MB per file</div>
               </div>
             </div>
 
@@ -353,8 +346,8 @@
             </div>
 
             <!-- Main Process Execute Button -->
-            <div class="action-footer">
-              <button class="btn btn-primary btn-xl btn-glow" id="processBtn" disabled>
+            <div class="workspace-actions">
+              <button class="btn btn-primary btn-glow btn-lg" id="processBtn" disabled data-i18n="processDoc">
                 <i class="fa-solid fa-play"></i> Process Document
               </button>
             </div>
@@ -578,6 +571,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="/js/i18n.js"></script>
   <script src="/js/app.js"></script>
   <script src="/js/pdfViewer.js"></script>
   <script src="/js/canvasEditor.js"></script>
