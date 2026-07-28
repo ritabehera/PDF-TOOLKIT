@@ -79,13 +79,63 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.getElementById('clearCanvasBtn')?.addEventListener('click', () => {
     ctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    showToast('Canvas annotations cleared.', 'info');
   });
 
-  document.getElementById('saveCanvasBtn')?.addEventListener('click', () => {
-    showToast('Exporting annotated PDF...', 'info');
-    setTimeout(() => {
-      showToast('Annotated PDF exported successfully!', 'success');
-    }, 1000);
+  document.getElementById('saveCanvasBtn')?.addEventListener('click', async () => {
+    const pdfCanvas = document.getElementById('pdfRenderCanvas');
+    const drawCanvas = document.getElementById('annotationCanvas');
+
+    if (!pdfCanvas || pdfCanvas.style.display === 'none') {
+      showToast('Please open a PDF file first.', 'warning');
+      return;
+    }
+
+    showToast('Exporting annotated PDF document...', 'info');
+
+    // Create offscreen merged canvas
+    const combinedCanvas = document.createElement('canvas');
+    combinedCanvas.width = pdfCanvas.width;
+    combinedCanvas.height = pdfCanvas.height;
+    const cCtx = combinedCanvas.getContext('2d');
+
+    // Draw PDF page base & draw annotations layer on top
+    cCtx.drawImage(pdfCanvas, 0, 0);
+    cCtx.drawImage(drawCanvas, 0, 0);
+
+    combinedCanvas.toBlob(async (blob) => {
+      if (!blob) {
+        showToast('Failed to export canvas image.', 'error');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('files', blob, 'annotated_page.png');
+
+      try {
+        const res = await fetch('/api/convert/images-to-pdf', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+
+        if (data.result && data.result.url) {
+          showToast('Annotated PDF exported successfully! Downloading...', 'success');
+          
+          // Trigger actual browser file download
+          const link = document.createElement('a');
+          link.href = data.result.url;
+          link.download = data.result.filename || 'annotated_document.pdf';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        } else {
+          showToast(data.error || 'Failed to export PDF file.', 'error');
+        }
+      } catch (err) {
+        showToast('Failed to export PDF document.', 'error');
+      }
+    }, 'image/png');
   });
 });
 
@@ -130,6 +180,13 @@ function clearSignatureCanvas() {
 }
 
 function applySignature() {
+  const drawCanvas = document.getElementById('annotationCanvas');
+  if (sigCanvas && drawCanvas) {
+    const ctx = drawCanvas.getContext('2d');
+    const x = Math.max(20, (drawCanvas.width - sigCanvas.width) / 2);
+    const y = Math.max(20, (drawCanvas.height - sigCanvas.height) / 2);
+    ctx.drawImage(sigCanvas, x, y);
+  }
   closeSignatureModal();
-  showToast('Digital signature applied onto active page.', 'success');
+  showToast('Digital signature stamped onto document page!', 'success');
 }
