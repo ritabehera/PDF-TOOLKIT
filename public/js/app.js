@@ -441,7 +441,12 @@ async function executeToolProcess() {
       body: formData
     });
 
-    const data = await res.json();
+    let data;
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = { error: `Server error (${res.status} ${res.statusText})` };
+    }
 
     clearInterval(interval);
     progressBarFill.style.width = '100%';
@@ -451,8 +456,8 @@ async function executeToolProcess() {
       progressWrapper.style.display = 'none';
       processBtn.disabled = false;
 
-      if (data.error) {
-        showToast(data.error, 'error');
+      if (!res.ok || data.error) {
+        showToast(data.error || `Server error (${res.status})`, 'error');
       } else {
         showToast('Document processed successfully!', 'success');
         renderResult(data);
@@ -460,10 +465,11 @@ async function executeToolProcess() {
     }, 400);
 
   } catch (err) {
+    console.error('API execution error:', err);
     clearInterval(interval);
     progressWrapper.style.display = 'none';
     processBtn.disabled = false;
-    showToast('Failed to connect to server.', 'error');
+    showToast('Failed to connect to server. Please ensure local server is running.', 'error');
   }
 }
 
