@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF AI Toolkit - Modern AI-Powered PDF & Document Suite</title>
+  <meta name="description" content="Next-generation AI-powered PDF toolkit for merging, splitting, compressing, OCR, annotations, AI chat, summaries, and document analysis.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+
+  <!-- Custom Cursor Glow -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-outline" id="cursorOutline"></div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Main Application Wrapper -->
+  <div class="app-layout">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <div class="brand-logo">
+            <i class="fa-solid fa-file-pdf"></i>
+          </div>
+          <div class="brand-text">
+            <h2>PDF<span>.AI</span></h2>
+            <p>Toolkit Suite</p>
+          </div>
+        </div>
+        <button class="icon-btn mobile-close-sidebar" id="closeSidebarBtn">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="sidebar-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" id="toolSearchInput" placeholder="Search tools (e.g., merge, ocr, summary)...">
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <span class="nav-section-title">Core & Basic</span>
+          <a href="#" class="nav-item active" data-tool="dashboard">
+            <i class="fa-solid fa-chart-line"></i> Dashboard
+          </a>
+          <a href="#" class="nav-item" data-tool="merge">
+            <i class="fa-solid fa-object-group"></i> Merge PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="split">
+            <i class="fa-solid fa-scissors"></i> Split PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="compress">
+            <i class="fa-solid fa-file-contract"></i> Compress PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="rotate">
+            <i class="fa-solid fa-rotate-right"></i> Rotate PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="watermark">
+            <i class="fa-solid fa-stamp"></i> Watermark PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="organize">
+            <i class="fa-solid fa-layer-group"></i> Organize Pages
+          </a>
+          <a href="#" class="nav-item" data-tool="security">
+            <i class="fa-solid fa-lock"></i> Protect & Encrypt
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">AI Intelligence</span>
+          <a href="#" class="nav-item" data-tool="ai-summary">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> AI Summary
+          </a>
+          <a href="#" class="nav-item" data-tool="ai-chat">
+            <i class="fa-solid fa-comments"></i> AI Chat with PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="ai-explain">
+            <i class="fa-solid fa-lightbulb"></i> AI Explain PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="ai-quiz">
+            <i class="fa-solid fa-graduation-cap"></i> AI Flashcards & Quiz
+          </a>
+          <a href="#" class="nav-item" data-tool="ai-analyzer">
+            <i class="fa-solid fa-microscope"></i> AI Document Analyzer
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">Conversion & OCR</span>
+          <a href="#" class="nav-item" data-tool="convert">
+            <i class="fa-solid fa-right-left"></i> PDF Conversions
+          </a>
+          <a href="#" class="nav-item" data-tool="ocr">
+            <i class="fa-solid fa-eye"></i> OCR Image to Text
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">Canvas Editor & Sign</span>
+          <a href="#" class="nav-item" data-tool="canvas-editor">
+            <i class="fa-solid fa-pen-nib"></i> Draw & Sign Canvas
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <span class="nav-section-title">System & Account</span>
+          <a href="#" class="nav-item" data-tool="history">
+            <i class="fa-solid fa-clock-rotate-left"></i> History & Logs
+          </a>
+          <a href="#" class="nav-item" data-tool="admin">
+            <i class="fa-solid fa-user-shield"></i> Admin Dashboard
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="storage-widget">
+          <div class="storage-info">
+            <span>Storage Used</span>
+            <span id="storageText">12.4 MB / 500 MB</span>
+          </div>
+          <div class="progress-bar-sm">
+            <div class="progress-fill-sm" id="storageFill" style="width: 5%;"></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- Top Header Navbar -->
+      <header class="top-navbar">
+        <div class="nav-left">
+          <button class="icon-btn toggle-sidebar-btn" id="toggleSidebarBtn">
+            <i class="fa-solid fa-bars-staggered"></i>
+          </button>
+          <div class="page-title">
+            <h1 id="activeToolTitle">Dashboard</h1>
+            <span class="badge badge-ai" id="activeToolBadge"><i class="fa-solid fa-sparkles"></i> Overview</span>
+          </div>
+        </div>
+
+        <div class="nav-right">
+          <!-- Voice Assistant Button -->
+          <button class="btn btn-glass voice-btn" id="voiceAssistantBtn" title="Voice Assistant">
+            <i class="fa-solid fa-microphone"></i> <span>Voice AI</span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button class="icon-btn theme-toggle-btn" id="themeToggleBtn" title="Toggle Light/Dark Theme">
+            <i class="fa-solid fa-moon" id="themeIcon"></i>
+          </button>
+
+          <!-- User Profile Dropdown -->
+          <div class="user-profile-menu">
+            <div class="avatar" id="userAvatar">AI</div>
+            <div class="user-details">
+              <span class="user-name" id="userNameText">Guest User</span>
+              <span class="user-plan" id="userPlanText">Free Plan</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- View Containers -->
+      <div class="content-body">
+
+        <!-- DASHBOARD VIEW -->
+        <section class="view-panel active" id="view-dashboard">
+          <!-- Hero Banner -->
+          <div class="hero-card glass-card">
+            <div class="hero-content">
+              <div class="hero-badge"><i class="fa-solid fa-bolt"></i> Next-Gen AI Toolkit 2.0</div>
+              <h2>Supercharge Your PDF Workflow with AI</h2>
+              <p>Merge, compress, edit, convert, running high-accuracy OCR, and chatting with documents in real time using built-in intelligence.</p>
+              <div class="hero-actions">
+                <button class="btn btn-primary btn-glow" onclick="switchTool('merge')">
+                  <i class="fa-solid fa-object-group"></i> Quick Merge
+                </button>
+                <button class="btn btn-glass" onclick="switchTool('ai-summary')">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> AI Summarize
+                </button>
+              </div>
+            </div>
+            <div class="hero-illustration">
+              <div class="floating-icon icon-1"><i class="fa-solid fa-file-pdf"></i></div>
+              <div class="floating-icon icon-2"><i class="fa-solid fa-robot"></i></div>
+              <div class="floating-icon icon-3"><i class="fa-solid fa-lock"></i></div>
+            </div>
+          </div>
+
+          <!-- Dashboard Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-card glass-card">
+              <div class="metric-icon color-purple"><i class="fa-solid fa-file-circle-check"></i></div>
+              <div class="metric-data">
+                <h3 id="statTotalFiles">0</h3>
+                <p>Files Processed</p>
+              </div>
+            </div>
+            <div class="metric-card glass-card">
+              <div class="metric-icon color-blue"><i class="fa-solid fa-brain"></i></div>
+              <div class="metric-data">
+                <h3 id="statAiOps">0</h3>
+                <p>AI Insights Generated</p>
+              </div>
+            </div>
+            <div class="metric-card glass-card">
+              <div class="metric-icon color-green"><i class="fa-solid fa-shield-halved"></i></div>
+              <div class="metric-data">
+                <h3>100%</h3>
+                <p>Secure File Encryption</p>
+              </div>
+            </div>
+            <div class="metric-card glass-card">
+              <div class="metric-icon color-orange"><i class="fa-solid fa-bolt-lightning"></i></div>
+              <div class="metric-data">
+                <h3>&lt; 1.2s</h3>
+                <p>Avg Processing Speed</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tools Cards Grid -->
+          <div class="section-title-bar">
+            <h3>Popular Tools</h3>
+            <span class="subtext">Select a feature to get started</span>
+          </div>
+
+          <div class="tools-grid">
+            <div class="tool-card glass-card" onclick="switchTool('merge')">
+              <div class="tool-icon bg-gradient-1"><i class="fa-solid fa-object-group"></i></div>
+              <h4>Merge PDF</h4>
+              <p>Combine multiple PDF documents into a single organized file.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('split')">
+              <div class="tool-icon bg-gradient-2"><i class="fa-solid fa-scissors"></i></div>
+              <h4>Split PDF</h4>
+              <p>Extract specific pages or separate a PDF into multiple documents.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('compress')">
+              <div class="tool-icon bg-gradient-3"><i class="fa-solid fa-file-contract"></i></div>
+              <h4>Compress PDF</h4>
+              <p>Reduce file size without sacrificing visual readability.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('ai-summary')">
+              <div class="tool-icon bg-gradient-4"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <h4>AI PDF Summary</h4>
+              <p>Extract key takeaways, reading time, and bullet summaries instantly.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('ai-chat')">
+              <div class="tool-icon bg-gradient-5"><i class="fa-solid fa-comments"></i></div>
+              <h4>AI Chat with PDF</h4>
+              <p>Ask questions and interact with document content in real time.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('ocr')">
+              <div class="tool-icon bg-gradient-6"><i class="fa-solid fa-eye"></i></div>
+              <h4>OCR Image to Text</h4>
+              <p>Extract text from scanned images and convert into searchable text.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('canvas-editor')">
+              <div class="tool-icon bg-gradient-7"><i class="fa-solid fa-pen-nib"></i></div>
+              <h4>Draw & Digital Sign</h4>
+              <p>Draw freehand, add signature, highlight, and annotate on live pages.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('convert')">
+              <div class="tool-icon bg-gradient-8"><i class="fa-solid fa-right-left"></i></div>
+              <h4>Format Converter</h4>
+              <p>Convert JPG/PNG to PDF, PDF to Text, HTML, and Word formats.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+          </div>
+        </section>
+
+        <!-- GENERIC TOOL WORKFLOW PANEL -->
+        <section class="view-panel" id="view-tool-workspace">
+          <div class="workspace-card glass-card">
+            <!-- Tool Description -->
+            <div class="tool-header-info">
+              <h2 id="activeToolName">Tool Title</h2>
+              <p id="activeToolDesc">Tool description guidelines will be displayed here.</p>
+            </div>
+
+            <!-- Upload Area Drag & Drop -->
+            <div class="dropzone" id="dropzone">
+              <input type="file" id="fileInput" multiple accept=".pdf,.png,.jpg,.jpeg,.txt,.html" hidden>
+              <div class="dropzone-content">
+                <div class="dropzone-icon">
+                  <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <h3>Drag & Drop files here</h3>
+                <p>or click to browse from your computer (PDF, PNG, JPG, TXT)</p>
+                <div class="file-limits">Supports up to 50MB per file</div>
+              </div>
+            </div>
+
+            <!-- File List Preview Container -->
+            <div class="selected-files-list" id="selectedFilesList"></div>
+
+            <!-- Action Configuration Options -->
+            <div class="tool-options-box" id="toolOptionsBox">
+              <!-- Options populated dynamically depending on selected tool -->
+            </div>
+
+            <!-- Animated Progress Bar -->
+            <div class="progress-wrapper" id="progressWrapper" style="display: none;">
+              <div class="progress-label">
+                <span id="progressStatusText">Processing document with AI engine...</span>
+                <span id="progressPercent">0%</span>
+              </div>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="progressBarFill"></div>
+              </div>
+            </div>
+
+            <!-- Main Process Execute Button -->
+            <div class="action-footer">
+              <button class="btn btn-primary btn-xl btn-glow" id="processBtn" disabled>
+                <i class="fa-solid fa-play"></i> Process Document
+              </button>
+            </div>
+
+            <!-- Result Output Section -->
+            <div class="result-box" id="resultBox" style="display: none;">
+              <div class="result-header">
+                <div class="result-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+                <h3>Operation Complete!</h3>
+              </div>
+              <div class="result-content" id="resultContent">
+                <!-- Result links or data rendered here -->
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- AI CHAT & INTERACTIVE WORKSPACE -->
+        <section class="view-panel" id="view-ai-chat">
+          <div class="ai-chat-layout">
+            <div class="chat-sidebar glass-card">
+              <h3><i class="fa-solid fa-file-arrow-up"></i> Source PDF</h3>
+              <div class="chat-file-upload">
+                <input type="file" id="chatFileInput" accept=".pdf" hidden>
+                <button class="btn btn-glass w-100" onclick="document.getElementById('chatFileInput').click()">
+                  <i class="fa-solid fa-paperclip"></i> Select PDF for AI
+                </button>
+                <div class="chat-file-info" id="chatFileInfo">No file attached</div>
+              </div>
+              <div class="quick-prompts">
+                <span>Quick Prompts:</span>
+                <button class="chip-btn" onclick="sendQuickPrompt('Summarize the key points')">Summarize Key Points</button>
+                <button class="chip-btn" onclick="sendQuickPrompt('Explain main concepts in simple terms')">Explain Simply</button>
+                <button class="chip-btn" onclick="sendQuickPrompt('What are the main dates and action items?')">Find Dates & Actions</button>
+              </div>
+            </div>
+
+            <div class="chat-window glass-card">
+              <div class="chat-messages" id="chatMessages">
+                <div class="message system-message">
+                  <div class="msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                  <div class="msg-bubble">
+                    Hello! Attach a PDF document and ask me any question. I'll read and extract answers directly from your file.
+                  </div>
+                </div>
+              </div>
+
+              <div class="chat-input-bar">
+                <input type="text" id="chatInput" placeholder="Ask anything about your document...">
+                <button class="btn btn-primary" id="sendChatBtn">
+                  <i class="fa-solid fa-paper-plane"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CANVAS DRAWING & ANNOTATION VIEWER -->
+        <section class="view-panel" id="view-canvas-editor">
+          <div class="canvas-editor-container glass-card">
+            <div class="canvas-toolbar">
+              <button class="btn btn-glass" onclick="document.getElementById('canvasFileInput').click()">
+                <i class="fa-solid fa-folder-open"></i> Open PDF
+              </button>
+              <input type="file" id="canvasFileInput" accept=".pdf" hidden>
+
+              <div class="tool-group">
+                <button class="canvas-tool-btn active" data-mode="draw" title="Freehand Draw"><i class="fa-solid fa-pencil"></i></button>
+                <button class="canvas-tool-btn" data-mode="highlight" title="Highlighter"><i class="fa-solid fa-highlighter"></i></button>
+                <button class="canvas-tool-btn" data-mode="text" title="Add Text"><i class="fa-solid fa-font"></i></button>
+                <button class="canvas-tool-btn" data-mode="signature" title="Sign Document"><i class="fa-solid fa-signature"></i></button>
+              </div>
+
+              <div class="color-picker-group">
+                <label>Color:</label>
+                <input type="color" id="drawColorPicker" value="#ef4444">
+              </div>
+
+              <div class="size-slider-group">
+                <label>Width:</label>
+                <input type="range" id="drawWidthRange" min="1" max="20" value="4">
+              </div>
+
+              <button class="btn btn-glass" id="clearCanvasBtn"><i class="fa-solid fa-eraser"></i> Clear</button>
+              <button class="btn btn-primary" id="saveCanvasBtn"><i class="fa-solid fa-download"></i> Export PDF</button>
+            </div>
+
+            <div class="canvas-viewport" id="canvasViewport">
+              <div class="canvas-placeholder" id="canvasPlaceholder">
+                <i class="fa-solid fa-file-pdf"></i>
+                <p>Upload a PDF file to begin drawing, highlighting, and signing</p>
+              </div>
+              <canvas id="pdfRenderCanvas" style="display:none;"></canvas>
+              <canvas id="annotationCanvas" style="display:none;"></canvas>
+            </div>
+          </div>
+        </section>
+
+        <!-- HISTORY & AUDIT LOGS -->
+        <section class="view-panel" id="view-history">
+          <div class="workspace-card glass-card">
+            <div class="section-title-bar">
+              <h2>Processing History & Activity Log</h2>
+              <button class="btn btn-glass btn-sm" id="refreshHistoryBtn"><i class="fa-solid fa-arrows-rotate"></i> Refresh</button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table" id="historyTable">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>Tool</th>
+                    <th>File Name</th>
+                    <th>Size</th>
+                    <th>Status</th>
+                    <th>Download</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <tr><td colspan="6" class="text-center">Loading history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ADMIN DASHBOARD PANEL -->
+        <section class="view-panel" id="view-admin">
+          <div class="workspace-card glass-card">
+            <div class="section-title-bar">
+              <h2>Admin Operations & System Metrics</h2>
+              <span class="badge badge-ai">Live Diagnostics</span>
+            </div>
+
+            <div class="metrics-grid">
+              <div class="metric-card glass-card">
+                <div class="metric-icon color-purple"><i class="fa-solid fa-server"></i></div>
+                <div class="metric-data">
+                  <h3 id="adminServerStatus">Active</h3>
+                  <p>Server Status</p>
+                </div>
+              </div>
+              <div class="metric-card glass-card">
+                <div class="metric-icon color-blue"><i class="fa-solid fa-microchip"></i></div>
+                <div class="metric-data">
+                  <h3 id="adminActiveStorage">0 MB</h3>
+                  <p>Total Storage</p>
+                </div>
+              </div>
+              <div class="metric-card glass-card">
+                <div class="metric-icon color-green"><i class="fa-solid fa-users"></i></div>
+                <div class="metric-data">
+                  <h3 id="adminUserCount">1</h3>
+                  <p>Registered Users</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-sections">
+              <h3>Usage Stats by Tool</h3>
+              <div class="tool-stats-list" id="toolStatsList">
+                <p>No statistics logged yet.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Voice Assistant Floating Bar -->
+  <div class="voice-floating-bar" id="voiceFloatingBar" style="display: none;">
+    <div class="pulse-ring"></div>
+    <i class="fa-solid fa-microphone"></i>
+    <span id="voiceStatusText">Listening for voice command...</span>
+    <button class="icon-btn-sm" onclick="stopVoiceAssistant()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+
+  <!-- Signature Modal -->
+  <div class="modal" id="signatureModal" style="display: none;">
+    <div class="modal-content glass-card">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-signature"></i> Draw Digital Signature</h3>
+        <button class="icon-btn" onclick="closeSignatureModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <canvas id="signatureCanvas" width="500" height="200"></canvas>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-glass" onclick="clearSignatureCanvas()">Clear</button>
+        <button class="btn btn-primary" onclick="applySignature()">Apply Signature</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="/js/app.js"></script>
+  <script src="/js/pdfViewer.js"></script>
+  <script src="/js/canvasEditor.js"></script>
+  <script src="/js/aiAssistant.js"></script>
+  <script src="/js/voiceAssistant.js"></script>
+  <script src="/js/pwa.js"></script>
+</body>
+</html>
