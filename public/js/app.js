@@ -359,6 +359,16 @@ function switchTool(toolKey) {
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.getAttribute('data-tool') === toolKey);
   });
+  // Update mobile bottom nav styling
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.classList.toggle('active', item.getAttribute('data-tool') === toolKey);
+  });
+
+  // Close mobile sidebar and backdrop on tool switch
+  const sidebar = document.getElementById('sidebar');
+  const backdrop = document.getElementById('mobileBackdrop');
+  if (sidebar) sidebar.classList.remove('mobile-open');
+  if (backdrop) backdrop.classList.remove('active');
 
   if (toolKey === 'dashboard') {
     document.getElementById('view-dashboard').classList.add('active');
@@ -732,10 +742,18 @@ function renderResult(data) {
         </div>
       </div>
     `;
+  } else if (res.analysis) {
+    // AI Analysis Output
+    resultContent.innerHTML = `
+      <div class="ai-summary-output">
+        <h4><i class="fa-solid fa-brain"></i> AI Deep Document Analysis</h4>
+        <p style="margin: 10px 0; line-height: 1.6;">${res.analysis}</p>
+      </div>
+    `;
   } else if (res.flashcards) {
     // AI Quiz & Flashcards Output
     const cardHtml = res.flashcards.map(fc => `
-      <div style="background:var(--bg-secondary); padding:12px; border-radius:8px; margin-bottom:8px; border:1px solid var(--glass-border);">
+      <div class="flashcard-item" style="background:var(--bg-secondary); padding:10px 14px; border-radius:8px; margin-bottom:8px; border:1px solid var(--glass-border);">
         <strong>Q: ${fc.question}</strong>
         <p style="margin-top:4px; color:var(--text-muted);">A: ${fc.answer}</p>
       </div>
@@ -778,16 +796,15 @@ async function loadHistory() {
           <td>${new Date(h.timestamp).toLocaleTimeString()}</td>
           <td><span class="badge badge-ai">${h.toolName}</span></td>
           <td>${h.fileName || 'document.pdf'}</td>
-          <td>${h.fileSize ? (h.fileSize / 1024).toFixed(1) + ' KB' : 'N/A'}</td>
-          <td><span style="color:var(--success);"><i class="fa-solid fa-circle-check"></i> ${h.status}</span></td>
-          <td>${h.downloadUrl !== '#' ? `<a href="${h.downloadUrl}" download style="color:var(--accent-primary);">Download</a>` : '-'}</td>
+          <td>${(h.fileSize / (1024 * 1024)).toFixed(2)} MB</td>
+          <td><a href="${h.downloadUrl}" download class="icon-btn"><i class="fa-solid fa-download"></i></a></td>
         </tr>
       `).join('');
     } else {
-      tbody.innerHTML = '<tr><td colspan="6" class="text-center">No processing history recorded yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No processing history recorded yet.</td></tr>';
     }
   } catch (err) {
-    tbody.innerHTML = '<tr><td colspan="6" class="text-center">Error loading history.</td></tr>';
+    console.warn('Failed to load history:', err.message);
   }
 }
 
@@ -796,27 +813,29 @@ async function loadAdminMetrics() {
   try {
     const res = await fetch('/api/dashboard/metrics');
     const data = await res.json();
-    document.getElementById('adminActiveStorage').textContent = `${data.metrics.activeStorageMB} MB`;
-    document.getElementById('adminUserCount').textContent = data.metrics.totalUsers;
-
-    const list = document.getElementById('toolStatsList');
-    if (data.toolStats && Object.keys(data.toolStats).length > 0) {
-      list.innerHTML = Object.entries(data.toolStats).map(([tool, count]) => `
-        <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--glass-border);">
-          <span>${tool}</span>
-          <strong>${count} operations</strong>
-        </div>
-      `).join('');
+    if (data.system) {
+      document.getElementById('adminCpuUsage').textContent = data.system.cpuUsage;
+      document.getElementById('adminMemUsage').textContent = data.system.memUsage;
+      document.getElementById('adminUptime').textContent = data.system.uptime;
+      document.getElementById('adminNodeVer').textContent = data.system.nodeVersion;
     }
   } catch (err) {
-    console.warn('Failed to load admin stats:', err);
+    console.warn('Failed to load admin metrics:', err.message);
   }
 }
 
 // Theme Toggle Handler
 function initThemeToggle() {
   const btn = document.getElementById('themeToggleBtn');
-  const icon = document.getElementById('themeIcon');
+  const icon = document.getElementById('themeToggleIcon');
+  if (!btn || !icon) return;
+
+  document.documentElement.setAttribute('data-theme', appState.theme);
+  if (appState.theme === 'light') {
+    icon.className = 'fa-solid fa-sun';
+  } else {
+    icon.className = 'fa-solid fa-moon';
+  }
 
   btn.addEventListener('click', () => {
     appState.theme = appState.theme === 'dark' ? 'light' : 'dark';
@@ -845,17 +864,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Mobile Sidebar Toggle
+  // Mobile Bottom Nav Click Listeners
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.addEventListener('click', (e) => {
+      const tool = item.getAttribute('data-tool');
+      if (tool) {
+        switchTool(tool);
+      }
+    });
+  });
+
+  // Mobile Sidebar Toggle & Backdrop Handler
   const toggleBtn = document.getElementById('toggleSidebarBtn');
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const sidebar = document.getElementById('sidebar');
   const closeBtn = document.getElementById('closeSidebarBtn');
+  const backdrop = document.getElementById('mobileBackdrop');
 
-  if (toggleBtn && sidebar) {
-    toggleBtn.addEventListener('click', () => sidebar.classList.toggle('mobile-open'));
-  }
-  if (closeBtn && sidebar) {
-    closeBtn.addEventListener('click', () => sidebar.classList.remove('mobile-open'));
-  }
+  const openMobileDrawer = () => {
+    if (sidebar) sidebar.classList.add('mobile-open');
+    if (backdrop) backdrop.classList.add('active');
+  };
+
+  const closeMobileDrawer = () => {
+    if (sidebar) sidebar.classList.remove('mobile-open');
+    if (backdrop) backdrop.classList.remove('active');
+  };
+
+  if (toggleBtn) toggleBtn.addEventListener('click', openMobileDrawer);
+  if (mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileDrawer);
+  if (closeBtn) closeBtn.addEventListener('click', closeMobileDrawer);
+  if (backdrop) backdrop.addEventListener('click', closeMobileDrawer);
 
   // Process Button Click
   const processBtn = document.getElementById('processBtn');
