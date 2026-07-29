@@ -218,6 +218,59 @@ class PDFPreviewRenderer {
       containerElement.innerHTML = '';
     }
   }
+
+  /**
+   * Convert all PDF document pages into high-resolution PNG / JPEG images
+   */
+  static async convertPDFToImages(file, format = 'png', scale = 2.0) {
+    if (!pdfjsLib || !file) return [];
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const pdfDoc = await pdfjsLib.getDocument({ data: buffer }).promise;
+      const numPages = pdfDoc.numPages;
+      const results = [];
+
+      const isJpg = format.toLowerCase() === 'jpg' || format.toLowerCase() === 'jpeg';
+      const mimeType = isJpg ? 'image/jpeg' : 'image/png';
+      const ext = isJpg ? 'jpg' : 'png';
+
+      for (let p = 1; p <= numPages; p++) {
+        const page = await pdfDoc.getPage(p);
+        const viewport = page.getViewport({ scale });
+
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        const ctx = canvas.getContext('2d');
+
+        if (isJpg) {
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+
+        await page.render({ canvasContext: ctx, viewport }).promise;
+
+        const dataUrl = canvas.toDataURL(mimeType, 0.95);
+        const baseName = (file.name || 'document').replace(/\.pdf$/i, '');
+        const filename = `${baseName}_page_${p}.${ext}`;
+
+        results.push({
+          pageNum: p,
+          totalPages: numPages,
+          filename,
+          dataUrl,
+          width: viewport.width,
+          height: viewport.height
+        });
+      }
+
+      return results;
+    } catch (err) {
+      console.error('PDF to Image rendering error:', err);
+      return [];
+    }
+  }
 }
 
 window.PDFPreviewRenderer = PDFPreviewRenderer;

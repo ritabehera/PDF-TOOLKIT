@@ -695,6 +695,49 @@ async function executeToolProcess() {
     if (fmtSelect) formData.append('format', fmtSelect.value);
   }
 
+  // High-precision PDF.js rendering for PDF to Image
+  if (appState.currentTool === 'pdf-to-image' && window.PDFPreviewRenderer && appState.selectedFiles[0] && (appState.selectedFiles[0].name || '').toLowerCase().endsWith('.pdf')) {
+    const fmtSelect = document.getElementById('pdfToImageFormatSelect');
+    const format = fmtSelect ? fmtSelect.value : 'png';
+    const pageImages = await window.PDFPreviewRenderer.convertPDFToImages(appState.selectedFiles[0], format, 2.0);
+    
+    if (pageImages && pageImages.length > 0) {
+      clearInterval(interval);
+      progressBarFill.style.width = '100%';
+      progressPercent.textContent = '100%';
+
+      setTimeout(() => {
+        progressWrapper.style.display = 'none';
+        processBtn.disabled = false;
+        showToast(`Successfully converted ${pageImages.length} page(s) to ${format.toUpperCase()} images!`, 'success');
+        
+        const resultBox = document.getElementById('resultBox');
+        const resultContent = document.getElementById('resultContent');
+        resultBox.style.display = 'block';
+
+        const pagesHtml = pageImages.map(img => `
+          <div class="pdf-image-result-card" style="margin-bottom:20px; background:var(--bg-secondary); padding:16px; border-radius:12px; border:1px solid var(--glass-border); text-align:center;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+              <span class="badge badge-ai"><i class="fa-solid fa-image"></i> Page ${img.pageNum} of ${img.totalPages}</span>
+              <a href="${img.dataUrl}" download="${img.filename}" class="btn btn-sm btn-primary">
+                <i class="fa-solid fa-download"></i> Download Page ${img.pageNum} (${format.toUpperCase()})
+              </a>
+            </div>
+            <img src="${img.dataUrl}" alt="${img.filename}" style="max-width:100%; height:auto; border-radius:8px; box-shadow:var(--shadow-md); border:1px solid var(--glass-border);">
+          </div>
+        `).join('');
+
+        resultContent.innerHTML = `
+          <h4 style="margin-bottom:14px;"><i class="fa-solid fa-images" style="color:var(--accent-primary);"></i> Converted PDF Pages (${pageImages.length} Page Images)</h4>
+          ${pagesHtml}
+        `;
+      }, 400);
+
+      fetch('/api/convert/pdf-to-image', { method: 'POST', body: formData }).catch(e => console.warn('History logging note:', e.message));
+      return;
+    }
+  }
+
   try {
     const res = await fetch(toolMeta.endpoint, {
       method: 'POST',
