@@ -444,9 +444,16 @@ function switchTool(toolKey) {
     document.getElementById('resultBox').style.display = 'none';
     document.getElementById('progressWrapper').style.display = 'none';
 
-    // Set file input multiple mode
+    // Set file input multiple and accept attributes
     const fileInput = document.getElementById('fileInput');
     fileInput.multiple = toolMeta.multiple;
+    if (toolKey === 'image-to-pdf' || toolKey === 'ocr') {
+      fileInput.accept = "image/*,.png,.jpg,.jpeg,.webp,.bmp";
+    } else if (toolKey === 'pdf-to-image' || toolKey === 'pdf-to-text' || toolKey === 'pdf-to-html' || toolKey === 'merge' || toolKey === 'split' || toolKey === 'compress' || toolKey === 'rotate' || toolKey === 'watermark' || toolKey === 'extract-pages' || toolKey === 'delete-pages' || toolKey === 'lock-pdf' || toolKey === 'unlock-pdf' || toolKey === 'qr-code' || toolKey === 'organize' || toolKey === 'security') {
+      fileInput.accept = ".pdf,application/pdf";
+    } else {
+      fileInput.accept = ".pdf,.png,.jpg,.jpeg,.webp,.txt";
+    }
   }
 }
 

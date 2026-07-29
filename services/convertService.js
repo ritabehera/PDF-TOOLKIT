@@ -169,8 +169,41 @@ class ConvertService {
    * PDF to Image (PNG / JPEG) Converter
    */
   static async pdfToImage(filePath, imageFormat = 'png') {
-    const fileBytes = fs.readFileSync(filePath);
-    const pdfDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+    const ext = path.extname(filePath).toLowerCase();
+
+    // If input file is an image (PNG, JPG, WebP), handle image conversion cleanly
+    if (['.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif'].includes(ext)) {
+      const formatExt = imageFormat.toLowerCase() === 'jpg' || imageFormat.toLowerCase() === 'jpeg' ? '.jpg' : '.png';
+      const outputFilename = generateFilename('converted_image', 'img_format', formatExt);
+      const outputPath = path.join(getDownloadsDir(), outputFilename);
+
+      const imgBytes = fs.readFileSync(filePath);
+      if (formatExt === '.jpg') {
+        await sharp(imgBytes).jpeg({ quality: 95 }).toFile(outputPath);
+      } else {
+        await sharp(imgBytes).png().toFile(outputPath);
+      }
+
+      const stats = fs.statSync(outputPath);
+      return {
+        filename: outputFilename,
+        path: outputPath,
+        url: `/downloads/${outputFilename}`,
+        pageCount: 1,
+        size: stats.size,
+        format: formatExt.replace('.', '')
+      };
+    }
+
+    // Safely parse PDF document
+    let pdfDoc;
+    try {
+      const fileBytes = fs.readFileSync(filePath);
+      pdfDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+    } catch (err) {
+      throw new Error('Invalid file format. Please upload a valid PDF document.');
+    }
+
     const pageCount = pdfDoc.getPageCount();
 
     let textContent = '';
@@ -194,7 +227,7 @@ class ConvertService {
       <line x1="50" y1="90" x2="${width - 50}" y2="90" stroke="#cbd5e1" stroke-width="1"/>
       <foreignObject x="50" y="110" width="${width - 100}" height="${height - 160}">
         <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: sans-serif; font-size: 15px; color: #334155; line-height: 1.6; white-space: pre-wrap; word-break: break-word;">
-          ${textContent.substring(0, 2000) || 'Converted PDF Document Page'}
+          ${textContent.substring(0, 2000) || 'Converted PDF Document Page View'}
         </div>
       </foreignObject>
     </svg>`;
