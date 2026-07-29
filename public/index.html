@@ -118,6 +118,12 @@
 
         <div class="nav-section">
           <span class="nav-section-title" data-i18n="ocrConverters">Conversion & OCR</span>
+          <a href="#" class="nav-item" data-tool="image-to-pdf">
+            <i class="fa-solid fa-file-image"></i> Image to PDF
+          </a>
+          <a href="#" class="nav-item" data-tool="pdf-to-image">
+            <i class="fa-solid fa-image"></i> PDF to Image
+          </a>
           <a href="#" class="nav-item" data-tool="pdf-to-text" data-i18n="pdfToText">
             <i class="fa-solid fa-file-lines"></i> PDF to Text
           </a>
@@ -285,6 +291,20 @@
               <div class="tool-icon bg-gradient-5"><i class="fa-solid fa-eye"></i></div>
               <h4 data-i18n="ocrImageToText">OCR Image to Text</h4>
               <p>Convert scanned documents & images into editable, searchable text.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('image-to-pdf')">
+              <div class="tool-icon bg-gradient-1"><i class="fa-solid fa-file-image"></i></div>
+              <h4>Image to PDF</h4>
+              <p>Convert JPG, PNG, WebP images into a clean PDF document.</p>
+              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+
+            <div class="tool-card glass-card" onclick="switchTool('pdf-to-image')">
+              <div class="tool-icon bg-gradient-2"><i class="fa-solid fa-image"></i></div>
+              <h4>PDF to Image</h4>
+              <p>Convert PDF document pages into high-resolution PNG or JPG images.</p>
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 

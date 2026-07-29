@@ -89,6 +89,28 @@ class ConvertController {
       next(err);
     }
   }
+
+  static async pdfToImage(req, res, next) {
+    try {
+      if (!req.file) return res.status(400).json({ error: 'Please upload a PDF file.' });
+
+      const format = req.body.format || 'png';
+      const result = await ConvertService.pdfToImage(req.file.path, format);
+      cleanupFile(req.file.path);
+
+      await HistoryModel.add({
+        userId: req.user ? req.user.id : 'guest',
+        toolName: 'PDF to Image',
+        fileName: result.filename,
+        fileSize: result.size,
+        downloadUrl: result.url
+      });
+
+      res.json({ success: true, result });
+    } catch (err) {
+      next(err);
+    }
+  }
 }
 
 module.exports = ConvertController;

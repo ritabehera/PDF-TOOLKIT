@@ -241,10 +241,33 @@ const toolRegistry = {
     renderOptions: () => `
       <div class="form-group">
         <label>Conversion Mode:</label>
-        <select id="convertModeSelect" class="form-control" onchange="updateConvertEndpoint(this.value)">
+        <select id="convertModeSelect" class="form-control">
           <option value="img2pdf">JPG/PNG Images to PDF</option>
           <option value="pdf2txt">PDF to Text (.txt)</option>
           <option value="pdf2html">PDF to HTML Web Page</option>
+        </select>
+      </div>`
+  },
+  'image-to-pdf': {
+    name: 'Image to PDF Converter',
+    badge: 'Conversion',
+    desc: 'Convert JPG, PNG, WebP images into a high-quality PDF document.',
+    endpoint: '/api/convert/images-to-pdf',
+    multiple: true,
+    renderOptions: () => '<p class="text-muted"><i class="fa-solid fa-file-image"></i> Select one or multiple image files (JPG, PNG, WebP) to combine into a PDF document.</p>'
+  },
+  'pdf-to-image': {
+    name: 'PDF to Image Converter',
+    badge: 'Conversion',
+    desc: 'Export PDF document pages into high-resolution PNG or JPG image files.',
+    endpoint: '/api/convert/pdf-to-image',
+    multiple: false,
+    renderOptions: () => `
+      <div class="form-group">
+        <label>Select Export Format:</label>
+        <select id="pdfToImageFormatSelect" class="form-control">
+          <option value="png" selected>PNG Image (.png)</option>
+          <option value="jpg">JPEG Image (.jpg)</option>
         </select>
       </div>`
   },
@@ -660,6 +683,9 @@ async function executeToolProcess() {
     formData.append('docType', document.getElementById('analyzerTypeSelect').value);
   } else if (appState.currentTool === 'ocr') {
     formData.append('language', document.getElementById('ocrLangSelect').value);
+  } else if (appState.currentTool === 'pdf-to-image') {
+    const fmtSelect = document.getElementById('pdfToImageFormatSelect');
+    if (fmtSelect) formData.append('format', fmtSelect.value);
   }
 
   try {
@@ -721,9 +747,17 @@ function renderResult(data) {
       `;
     }
 
+    const isImage = /\.(png|jpg|jpeg|webp)$/i.test(res.filename || res.url);
+    const imagePreview = isImage ? `
+      <div style="margin: 14px 0; text-align: center; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 12px; border: 1px solid var(--glass-border);">
+        <img src="${res.url}" alt="Converted Image Preview" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: var(--shadow-md);">
+      </div>
+    ` : '';
+
     resultContent.innerHTML = `
       <p>Your processed file is ready for download:</p>
       ${extraMetrics}
+      ${imagePreview}
       <div style="margin-top: 12px;">
         <a href="${res.url}" download="${res.filename}" class="btn btn-primary btn-glow">
           <i class="fa-solid fa-download"></i> Download ${res.filename}

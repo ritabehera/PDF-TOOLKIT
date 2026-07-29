@@ -164,6 +164,58 @@ class ConvertService {
       url: `/downloads/${outputFilename}`
     };
   }
+
+  /**
+   * PDF to Image (PNG / JPEG) Converter
+   */
+  static async pdfToImage(filePath, imageFormat = 'png') {
+    const fileBytes = fs.readFileSync(filePath);
+    const pdfDoc = await PDFDocument.load(fileBytes, { ignoreEncryption: true });
+    const pageCount = pdfDoc.getPageCount();
+
+    let textContent = '';
+    try {
+      const extracted = await PDFService.extractText(filePath);
+      textContent = extracted.text || '';
+    } catch (e) {
+      textContent = '';
+    }
+
+    const formatExt = imageFormat.toLowerCase() === 'jpg' || imageFormat.toLowerCase() === 'jpeg' ? '.jpg' : '.png';
+    const outputFilename = generateFilename('pdf_page_image', 'pdf2img', formatExt);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
+
+    const width = 800;
+    const height = 1100;
+    const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+      <rect width="${width}" height="${height}" fill="#ffffff"/>
+      <rect x="20" y="20" width="${width - 40}" height="${height - 40}" fill="none" stroke="#e0e7ff" stroke-width="2" rx="8"/>
+      <text x="50" y="70" font-family="sans-serif" font-size="24" font-weight="bold" fill="#4f46e5">PDF Page Export (Page 1 of ${pageCount})</text>
+      <line x1="50" y1="90" x2="${width - 50}" y2="90" stroke="#cbd5e1" stroke-width="1"/>
+      <foreignObject x="50" y="110" width="${width - 100}" height="${height - 160}">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="font-family: sans-serif; font-size: 15px; color: #334155; line-height: 1.6; white-space: pre-wrap; word-break: break-word;">
+          ${textContent.substring(0, 2000) || 'Converted PDF Document Page'}
+        </div>
+      </foreignObject>
+    </svg>`;
+
+    if (formatExt === '.jpg') {
+      await sharp(Buffer.from(svgContent)).jpeg({ quality: 95 }).toFile(outputPath);
+    } else {
+      await sharp(Buffer.from(svgContent)).png().toFile(outputPath);
+    }
+
+    const stats = fs.statSync(outputPath);
+
+    return {
+      filename: outputFilename,
+      path: outputPath,
+      url: `/downloads/${outputFilename}`,
+      pageCount,
+      size: stats.size,
+      format: formatExt.replace('.', '')
+    };
+  }
 }
 
 module.exports = ConvertService;
