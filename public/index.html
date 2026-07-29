@@ -18,6 +18,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
   <!-- Custom Styles -->
+  <link rel="icon" type="image/svg+xml" href="/icon.svg">
   <link rel="stylesheet" href="/css/styles.css">
   <link rel="manifest" href="/manifest.json">
 </head>
@@ -131,21 +132,13 @@
           </a>
         </div>
 
-        <div class="nav-section">
-          <span class="nav-section-title" data-i18n="canvasEditorSign">Canvas Editor & Sign</span>
-          <a href="#" class="nav-item" data-tool="canvas-editor" data-i18n="drawSignCanvas">
-            <i class="fa-solid fa-pen-nib"></i> Draw & Sign Canvas
-          </a>
-        </div>
 
         <div class="nav-section">
           <span class="nav-section-title">System & Account</span>
           <a href="#" class="nav-item" data-tool="history" data-i18n="historyLogs">
             <i class="fa-solid fa-clock-rotate-left"></i> History & Logs
           </a>
-          <a href="#" class="nav-item" data-tool="admin">
-            <i class="fa-solid fa-user-shield"></i> Admin Dashboard
-          </a>
+
         </div>
       </nav>
     </aside>
@@ -295,12 +288,6 @@
               <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
             </div>
 
-            <div class="tool-card glass-card" onclick="switchTool('canvas-editor')">
-              <div class="tool-icon bg-gradient-6"><i class="fa-solid fa-pen-nib"></i></div>
-              <h4 data-i18n="drawSignCanvas">Draw & Sign Canvas</h4>
-              <p>Annotate pages, highlight key text, and stamp digital signatures.</p>
-              <span class="tool-arrow"><i class="fa-solid fa-arrow-right"></i></span>
-            </div>
           </div>
         </section>
 

@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const sharp = require('sharp');
 const PDFService = require('./pdfService');
-const { generateFilename } = require('../utils/fileHelpers');
+const { generateFilename, getDownloadsDir } = require('../utils/fileHelpers');
 
 class ConvertService {
   /**
@@ -53,7 +53,7 @@ class ConvertService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('converted_images', 'img2pdf', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -100,7 +100,7 @@ class ConvertService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('text_document', 'txt2pdf', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -118,7 +118,7 @@ class ConvertService {
   static async pdfToText(filePath) {
     const { text, numPages } = await PDFService.extractText(filePath);
     const outputFilename = generateFilename('extracted_text', 'pdf2txt', '.txt');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, text);
 
     return {
@@ -155,7 +155,7 @@ class ConvertService {
 </html>`;
 
     const outputFilename = generateFilename('converted_html', 'pdf2html', '.html');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, htmlContent);
 
     return {

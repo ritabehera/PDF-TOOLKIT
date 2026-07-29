@@ -1,17 +1,50 @@
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const config = require('../config/default');
 
-const ensureDirectories = () => {
-  const dirs = [
-    path.join(__dirname, '..', config.uploadDir),
-    path.join(__dirname, '..', config.tempDir),
-    path.join(__dirname, '..', 'public', 'downloads')
-  ];
+const getUploadDir = () => {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const dir = path.join(os.tmpdir(), config.uploadDir || 'uploads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
+  }
+  const dir = path.join(__dirname, '..', config.uploadDir || 'uploads');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return dir;
+};
 
+const getTempDir = () => {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const dir = path.join(os.tmpdir(), config.tempDir || 'temp');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
+  }
+  const dir = path.join(__dirname, '..', config.tempDir || 'temp');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return dir;
+};
+
+const getDownloadsDir = () => {
+  if (process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME) {
+    const dir = path.join(os.tmpdir(), 'downloads');
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    return dir;
+  }
+  const dir = path.join(__dirname, '..', 'public', 'downloads');
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  return dir;
+};
+
+const ensureDirectories = () => {
+  const dirs = [getUploadDir(), getTempDir(), getDownloadsDir()];
   dirs.forEach(dir => {
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
+    try {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+    } catch (err) {
+      console.warn(`[FileHelpers] Could not create directory ${dir}:`, err.message);
     }
   });
 };
@@ -43,8 +76,12 @@ const formatBytes = (bytes, decimals = 2) => {
 };
 
 module.exports = {
+  getUploadDir,
+  getTempDir,
+  getDownloadsDir,
   ensureDirectories,
   cleanupFile,
   generateFilename,
   formatBytes
 };
+

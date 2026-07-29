@@ -774,6 +774,7 @@ function renderResult(data) {
 async function loadMetrics() {
   try {
     const res = await fetch('/api/dashboard/metrics');
+    if (!res.ok) return;
     const data = await res.json();
     if (data.metrics) {
       document.getElementById('statTotalFiles').textContent = data.metrics.totalFilesProcessed;
@@ -789,6 +790,7 @@ async function loadHistory() {
   const tbody = document.getElementById('historyTableBody');
   try {
     const res = await fetch('/api/dashboard/metrics');
+    if (!res.ok) return;
     const data = await res.json();
     if (data.recentHistory && data.recentHistory.length > 0) {
       tbody.innerHTML = data.recentHistory.map(h => `

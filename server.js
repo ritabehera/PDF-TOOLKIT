@@ -11,7 +11,7 @@ const { connectDB } = require('./config/db');
 const { apiLimiter } = require('./middleware/rateLimiter');
 const { authenticateToken } = require('./middleware/auth');
 const errorHandler = require('./middleware/errorHandler');
-const { ensureDirectories } = require('./utils/fileHelpers');
+const { ensureDirectories, getDownloadsDir } = require('./utils/fileHelpers');
 
 // Process Safety Handlers for Unhandled Worker Rejections
 process.on('uncaughtException', (err) => {
@@ -54,6 +54,7 @@ app.use('/api/', apiLimiter);
 
 // Serve Static Web Assets
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/downloads', express.static(getDownloadsDir()));
 app.use('/downloads', express.static(path.join(__dirname, 'public', 'downloads')));
 
 // Health Check Endpoint
@@ -83,12 +84,15 @@ app.get('*', (req, res) => {
 app.use(errorHandler);
 
 const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`\n==================================================`);
-  console.log(`🚀 Modern AI-Powered PDF Toolkit Server is Running!`);
-  console.log(`🌐 URL: http://localhost:${PORT}`);
-  console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`==================================================\n`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`\n==================================================`);
+    console.log(`🚀 Modern AI-Powered PDF Toolkit Server is Running!`);
+    console.log(`🌐 URL: http://localhost:${PORT}`);
+    console.log(`⚡ Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`==================================================\n`);
+  });
+}
 
 module.exports = app;
+

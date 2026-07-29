@@ -1,23 +1,19 @@
-const CACHE_NAME = 'pdf-ai-toolkit-v1';
-const ASSETS = [
-  '/',
-  '/index.html',
-  '/css/styles.css',
-  '/js/app.js',
-  '/js/pdfViewer.js',
-  '/js/canvasEditor.js',
-  '/js/aiAssistant.js',
-  '/js/voiceAssistant.js'
-];
+const CACHE_NAME = 'pdf-ai-toolkit-v2';
 
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
+    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
 
 self.addEventListener('fetch', (e) => {
+  // Network-first strategy to ensure real-time UI updates
   e.respondWith(
-    caches.match(e.request).then(res => res || fetch(e.request))
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });

@@ -1,7 +1,7 @@
 const Tesseract = require('tesseract.js');
 const fs = require('fs');
 const path = require('path');
-const { generateFilename } = require('../utils/fileHelpers');
+const { generateFilename, getDownloadsDir } = require('../utils/fileHelpers');
 const { PDFDocument, StandardFonts, rgb } = require('pdf-lib');
 
 class OCRService {
@@ -92,7 +92,7 @@ class OCRService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('ocr_searchable_doc', 'ocr_pdf', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {

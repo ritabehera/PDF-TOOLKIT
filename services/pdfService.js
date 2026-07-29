@@ -2,7 +2,7 @@ const { PDFDocument, rgb, StandardFonts, degrees } = require('pdf-lib');
 const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
-const { generateFilename, cleanupFile } = require('../utils/fileHelpers');
+const { generateFilename, cleanupFile, getDownloadsDir } = require('../utils/fileHelpers');
 
 class PDFService {
   /**
@@ -20,7 +20,7 @@ class PDFService {
 
     const pdfBytes = await mergedPdf.save();
     const outputFilename = generateFilename('merged_document', 'merged', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -78,7 +78,7 @@ class PDFService {
 
     const pdfBytes = await newDoc.save();
     const outputFilename = generateFilename('split_document', 'split', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -108,7 +108,7 @@ class PDFService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('rotated_document', 'rotated', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -168,7 +168,7 @@ class PDFService {
     });
 
     const outputFilename = generateFilename('compressed_document', 'compressed', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, compressedBytes);
 
     const originalSize = fileBytes.length;
@@ -226,7 +226,7 @@ class PDFService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('watermarked_document', 'watermarked', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -284,7 +284,7 @@ class PDFService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('header_footer_doc', 'numbered', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -334,7 +334,7 @@ class PDFService {
 
     const pdfBytes = await newDoc.save();
     const outputFilename = generateFilename('organized_doc', 'organized', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -360,7 +360,7 @@ class PDFService {
     });
 
     const outputFilename = generateFilename('protected_doc', 'locked', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -380,7 +380,7 @@ class PDFService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('unlocked_doc', 'unlocked', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
@@ -415,7 +415,7 @@ class PDFService {
 
     const pdfBytes = await pdfDoc.save();
     const outputFilename = generateFilename('qrcode_stamped_doc', 'qr_pdf', '.pdf');
-    const outputPath = path.join(__dirname, '..', 'public', 'downloads', outputFilename);
+    const outputPath = path.join(getDownloadsDir(), outputFilename);
     fs.writeFileSync(outputPath, pdfBytes);
 
     return {
